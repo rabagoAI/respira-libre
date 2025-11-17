@@ -6,20 +6,21 @@ import {
   Clock, 
   Euro,
   Heart,
-  Target
+  Settings
 } from 'lucide-react';
 import {
   calculateTimeSinceQuit,
-  calculateMoneySaved,
-  calculateCigarettesAvoided,
   calculateDailySavings,
   formatCurrency
 } from '../utils/calculations';
+import { calculateRealSavings, getMovingAverage, getTrendStats } from '../utils/dailyCalculations';
 import { differenceInDays } from 'date-fns';
 import HealthTimeline from './HealthTimeline';
 import SavingsGoals from './SavingsGoals';
+import SettingsModal from './SettingsModal';
+import DailyTracker from './DailyTracker';
 
-const Dashboard = ({ userData, onUpdateData }) => {
+const Dashboard = ({ userData, onUpdateData, onReset }) => {
   const [stats, setStats] = useState({
     timeSinceQuit: { days: 0, hours: 0, minutes: 0 },
     moneySaved: 0,
@@ -27,9 +28,21 @@ const Dashboard = ({ userData, onUpdateData }) => {
     dailySavings: 0,
     daysSinceQuit: 0
   });
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Validación de seguridad
+  if (!userData || !userData.quitDate || !userData.packPrice) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <p className="text-slate-600">Cargando datos...</p>
+      </div>
+    );
+  }
 
   // Actualizar estadísticas cada minuto
   useEffect(() => {
+    if (!userData?.quitDate) return;
+    
     const updateStats = () => {
       const quitDate = new Date(userData.quitDate);
       const timeSinceQuit = calculateTimeSinceQuit(quitDate);
@@ -40,31 +53,24 @@ const Dashboard = ({ userData, onUpdateData }) => {
         daysSinceQuit = 1;
       }
       
-      const moneySaved = calculateMoneySaved(
-        quitDate,
-        userData.packPrice,
-        userData.cigarettesPerPack,
-        userData.cigarettesPerDayBefore,
-        userData.cigarettesPerDayNow
-      );
-      const cigarettesAvoided = calculateCigarettesAvoided(
-        quitDate,
-        userData.cigarettesPerDayBefore,
-        userData.cigarettesPerDayNow
-      );
+      // Usar cálculos reales basados en registro diario
+      const realSavings = calculateRealSavings(userData);
+      
       const dailySavings = calculateDailySavings(
         userData.packPrice,
         userData.cigarettesPerPack,
         userData.cigarettesPerDayBefore,
-        userData.cigarettesPerDayNow
+        realSavings.averageDaily
       );
 
       setStats({
         timeSinceQuit,
-        moneySaved,
-        cigarettesAvoided,
+        moneySaved: realSavings.totalMoneySaved,
+        cigarettesAvoided: realSavings.totalCigarettesAvoided,
         dailySavings,
-        daysSinceQuit
+        daysSinceQuit,
+        averageDaily: realSavings.averageDaily,
+        daysTracked: realSavings.daysTracked
       });
     };
 
@@ -75,25 +81,38 @@ const Dashboard = ({ userData, onUpdateData }) => {
   }, [userData]);
 
   const isCompletelyQuit = userData.cigarettesPerDayNow === 0;
+  const movingAverage = getMovingAverage(userData.dailyLog, 7);
+  const trendStats = getTrendStats(userData.dailyLog);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Título de bienvenida */}
+      {/* Título de bienvenida con botón de configuración */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="text-center mb-12 relative"
       >
+        <button
+          onClick={() => setShowSettings(true)}
+          className="absolute right-0 top-0 p-3 hover:bg-slate-100 rounded-xl transition-colors group"
+          title="Editar configuración"
+        >
+          <Settings className="w-6 h-6 text-slate-400 group-hover:text-primary-600 group-hover:rotate-90 transition-all duration-300" />
+        </button>
+        
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
           {isCompletelyQuit ? '¡Estás libre de humo!' : '¡Sigue así!'}
         </h2>
         <p className="text-lg text-slate-600">
-          {isCompletelyQuit 
-            ? 'Cada día sin fumar es una victoria. Este es tu progreso:'
+          {stats.daysTracked > 0 
+            ? `Promedio últimos 7 días: ${movingAverage} cigarrillos/día`
             : `Has reducido tu consumo de ${userData.cigarettesPerDayBefore} a ${userData.cigarettesPerDayNow} cigarrillos al día`
           }
         </p>
       </motion.div>
+
+      {/* Tracker diario */}
+      <DailyTracker userData={userData} onUpdateDaily={onUpdateData} />
 
       {/* Estadísticas principales */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -162,7 +181,7 @@ const Dashboard = ({ userData, onUpdateData }) => {
               {stats.cigarettesAvoided.toLocaleString('es-ES')}
             </p>
             <p className="text-sm text-slate-500">
-              {userData.cigarettesPerDayBefore - userData.cigarettesPerDayNow} menos/día
+              {stats.averageDaily ? `Promedio: ${stats.averageDaily}/día` : `${userData.cigarettesPerDayBefore - userData.cigarettesPerDayNow} menos/día`}
             </p>
           </div>
         </motion.div>
@@ -253,6 +272,14 @@ const Dashboard = ({ userData, onUpdateData }) => {
         moneySaved={stats.moneySaved}
         dailySavings={stats.dailySavings}
       />
+
+      <SettingsModal
+  isOpen={showSettings}
+  onClose={() => setShowSettings(false)}
+  userData={userData}
+  onSave={onUpdateData}
+  onReset={onReset}  // ← Esta línea debe estar
+/>
     </div>
   );
 };

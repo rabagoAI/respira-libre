@@ -11,22 +11,30 @@ function App() {
 
   // Maneja el envío del formulario de inicio
   const handleStartJourney = (formData) => {
+    const today = new Date().toISOString().split('T')[0];
     const journeyData = {
       ...formData,
       startDate: new Date().toISOString(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      dailyLog: {
+        [today]: formData.cigarettesPerDayNow
+      }
     };
     
     setUserData(journeyData);
     setShowOnboarding(false);
   };
 
-  // Resetea la aplicación
+  // Reinicia completamente la aplicación
   const handleReset = () => {
-    if (window.confirm('¿Estás seguro de que quieres reiniciar tu progreso? Esta acción no se puede deshacer.')) {
-      setUserData(null);
-      setShowOnboarding(true);
-    }
+    // Borrar datos de usuario
+    setUserData(null);
+    
+    // Borrar objetivos guardados
+    localStorage.removeItem('respiraLibre_goals');
+    
+    // Mostrar formulario inicial
+    setShowOnboarding(true);
   };
 
   return (
@@ -38,7 +46,7 @@ function App() {
       {showOnboarding ? (
         <OnboardingForm onSubmit={handleStartJourney} />
       ) : (
-        <Dashboard userData={userData} onUpdateData={setUserData} />
+        <Dashboard userData={userData} onUpdateData={setUserData} onReset={handleReset} />
       )}
 
       {/* Footer */}

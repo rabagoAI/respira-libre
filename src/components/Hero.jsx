@@ -82,16 +82,16 @@ const Hero = ({ hasStarted, onReset }) => {
             </div>
           </motion.div>
 
-          {/* Botón de reset si ya empezó */}
+          {/* Botón de editar si ya empezó */}
           {hasStarted && (
             <motion.button
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               onClick={onReset}
-              className="text-sm text-primary-100 hover:text-white underline transition-colors"
+              className="text-sm text-primary-100 hover:text-white underline transition-colors flex items-center gap-2 mx-auto"
             >
-              Reiniciar mi progreso
+              <span>Editar mi configuración</span>
             </motion.button>
           )}
         </div>
