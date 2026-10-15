@@ -8,121 +8,91 @@ export const healthBenefits = [
     minutes: 20,
     title: "Presión arterial normal",
     description: "Tu ritmo cardíaco y presión arterial vuelven a la normalidad",
-    system: 'cardio',
-    icon: "❤️",
-    color: "text-red-500"
+    system: 'cardio'
   },
   {
     minutes: 120, // 2 horas
     title: "Mejora circulación",
     description: "La circulación comienza a mejorar, especialmente en manos y pies",
-    system: 'circulation',
-    icon: "🩸",
-    color: "text-rose-500"
+    system: 'circulation'
   },
   {
     minutes: 720, // 12 horas
     title: "Nivel de CO normalizado",
     description: "El nivel de monóxido de carbono en tu sangre vuelve a la normalidad",
-    system: 'respiratory',
-    icon: "💨",
-    color: "text-blue-500"
+    system: 'respiratory'
   },
   {
     days: 1,
     title: "Riesgo cardíaco reducido",
     description: "El riesgo de ataque cardíaco comienza a disminuir",
-    system: 'cardio',
-    icon: "💚",
-    color: "text-green-500"
+    system: 'cardio'
   },
   {
     days: 2,
     title: "Sentidos recuperados",
     description: "Las terminaciones nerviosas comienzan a regenerarse. Mejora el olfato y gusto",
-    system: 'wellbeing',
-    icon: "👃",
-    color: "text-purple-500"
+    system: 'wellbeing'
   },
   {
     days: 3,
     title: "Respiración más fácil",
     description: "Los bronquios comienzan a relajarse, respirar es más fácil",
-    system: 'respiratory',
-    icon: "🫁",
-    color: "text-cyan-500"
+    system: 'respiratory'
   },
   {
     days: 7,
     title: "Primera semana completada",
     description: "¡Has superado lo más difícil! La dependencia física disminuye notablemente",
-    system: 'wellbeing',
-    icon: "🎉",
-    color: "text-yellow-500"
+    system: 'wellbeing'
   },
   {
     days: 14,
     title: "Circulación mejorada",
     description: "La circulación sanguínea mejora significativamente",
-    system: 'circulation',
-    icon: "🔄",
-    color: "text-indigo-500"
+    system: 'circulation'
   },
   {
     days: 30,
     title: "Función pulmonar mejorada",
     description: "La función pulmonar aumenta hasta un 30%. Menos tos y falta de aire",
-    system: 'respiratory',
-    icon: "🌬️",
-    color: "text-teal-500"
+    system: 'respiratory'
   },
   {
     days: 90,
     title: "Regeneración pulmonar",
     description: "Los cilios pulmonares se regeneran, mejorando la limpieza de los pulmones",
-    system: 'respiratory',
-    icon: "✨",
-    color: "text-emerald-500"
+    system: 'respiratory'
   },
   {
     days: 180,
     title: "Energía renovada",
     description: "Notas un aumento significativo de energía y capacidad física",
-    system: 'wellbeing',
-    icon: "⚡",
-    color: "text-amber-500"
+    system: 'wellbeing'
   },
   {
     days: 365,
     title: "¡Un año sin fumar!",
     description: "El riesgo de enfermedad cardíaca coronaria es la mitad del de un fumador",
-    system: 'cardio',
-    icon: "🏆",
-    color: "text-yellow-600"
+    system: 'cardio'
   },
   {
     days: 1825, // 5 años
     title: "Riesgo de cáncer reducido",
     description: "El riesgo de cáncer de boca, garganta y esófago es la mitad",
-    system: 'wellbeing',
-    icon: "🛡️",
-    color: "text-blue-600"
+    system: 'wellbeing'
   },
   {
     days: 3650, // 10 años
     title: "Riesgo de cáncer pulmonar",
     description: "El riesgo de morir de cáncer de pulmón es la mitad del de un fumador",
-    system: 'respiratory',
-    icon: "🎯",
-    color: "text-green-600"
+    system: 'respiratory'
   },
   {
     days: 5475, // 15 años
     title: "Riesgo cardíaco normalizado",
     description: "El riesgo de enfermedad cardíaca es igual al de alguien que nunca fumó",
-    system: 'cardio',
-    icon: "💪",
-    color: "text-red-600"
+    system: 'cardio'
   }
 ];
 
@@ -182,4 +152,18 @@ export const getTimeToNextBenefit = (minutesSinceQuit) => {
   const nextBenefit = getNextBenefit(minutesSinceQuit);
   if (!nextBenefit) return null;
   return formatTimeRemaining(getBenefitMinutes(nextBenefit) - minutesSinceQuit);
+};
+
+/**
+ * Duración corta y legible de un tiempo en minutos (p. ej. para hitos)
+ * @param {number} minutes - Minutos
+ * @returns {string} "20 min", "12 h", "3 días", "1 año"...
+ */
+export const formatDuration = (minutes) => {
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  if (minutes < MINUTES_PER_DAY) return `${Math.round(minutes / 60)} h`;
+  const days = Math.round(minutes / MINUTES_PER_DAY);
+  if (days < 365) return `${days} ${days === 1 ? 'día' : 'días'}`;
+  const years = Math.round(days / 365);
+  return `${years} ${years === 1 ? 'año' : 'años'}`;
 };

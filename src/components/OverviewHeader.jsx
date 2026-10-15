@@ -56,7 +56,7 @@ const OverviewHeader = ({ nextBenefit, timeToNext, progress }) => {
           </>
         ) : (
           <p className="text-sm text-success-700 font-semibold">
-            ¡Has alcanzado todos los hitos de recuperación! 🎉
+            ¡Has alcanzado todos los hitos de recuperación!
           </p>
         )}
       </div>

@@ -67,7 +67,7 @@ const RecoveryCard = ({ system, isSelected, onSelect, index }) => {
           className="text-xs text-slate-600 mt-3 leading-relaxed"
         >
           {system.nextBenefit
-            ? <>Próximo hito: <span className="font-semibold">{system.nextBenefit.icon} {system.nextBenefit.title}</span>. {system.nextBenefit.description}.</>
+            ? <>Próximo hito: <span className="font-semibold">{system.nextBenefit.title}</span>. {system.nextBenefit.description}.</>
             : '¡Has alcanzado todos los hitos de este sistema!'}
         </motion.p>
       )}

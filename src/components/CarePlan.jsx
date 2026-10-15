@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClipboardList, Lightbulb, Flag, Timer, Droplets, Repeat } from 'lucide-react';
 import DailyTracker from './DailyTracker';
 import { healthBenefits, getBenefitMinutes, formatTimeRemaining } from '../utils/healthBenefits';
+import { SYSTEM_ICONS } from '../utils/icons';
 
 const TIPS = [
   {
@@ -35,16 +36,17 @@ const UpcomingMilestones = ({ minutesSinceQuit }) => {
   const upcoming = healthBenefits.filter(b => minutesSinceQuit < getBenefitMinutes(b)).slice(0, 3);
 
   if (upcoming.length === 0) {
-    return <p className="text-sm text-slate-600 py-6 text-center">Has alcanzado todos los hitos. ¡Enhorabuena! 🎉</p>;
+    return <p className="text-sm text-slate-600 py-6 text-center">Has alcanzado todos los hitos. ¡Enhorabuena!</p>;
   }
 
   return (
     <div className="grid sm:grid-cols-3 gap-3">
       {upcoming.map(benefit => {
         const remaining = formatTimeRemaining(getBenefitMinutes(benefit) - minutesSinceQuit);
+        const Icon = SYSTEM_ICONS[benefit.system];
         return (
           <div key={benefit.title} className="rounded-2xl bg-white/80 border border-white p-4 shadow-sm">
-            <div className="text-2xl" aria-hidden="true">{benefit.icon}</div>
+            <Icon className="w-5 h-5 text-slate-500" aria-hidden="true" />
             <p className="font-semibold text-slate-800 mt-2 text-sm">{benefit.title}</p>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">{benefit.description}</p>
             <span className="inline-block mt-3 text-xs font-semibold rounded-full bg-slate-50 border border-slate-200 px-2.5 py-1 text-slate-700">

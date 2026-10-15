@@ -7,7 +7,6 @@ export const predefinedGoals = [
     name: 'iPhone 15 Pro',
     category: 'Tecnología',
     price: 1219,
-    image: '📱',
     description: 'El último iPhone con todas sus prestaciones',
     popular: true
   },
@@ -16,7 +15,6 @@ export const predefinedGoals = [
     name: 'MacBook Air',
     category: 'Tecnología',
     price: 1299,
-    image: '💻',
     description: 'Laptop perfecta para trabajo y creatividad',
     popular: true
   },
@@ -25,7 +23,6 @@ export const predefinedGoals = [
     name: 'iPad Air',
     category: 'Tecnología',
     price: 699,
-    image: '📲',
     description: 'Tablet versátil para entretenimiento y productividad'
   },
   {
@@ -33,7 +30,6 @@ export const predefinedGoals = [
     name: 'PlayStation 5',
     category: 'Gaming',
     price: 549,
-    image: '🎮',
     description: 'La última generación de consolas'
   },
   {
@@ -41,7 +37,6 @@ export const predefinedGoals = [
     name: 'Nintendo Switch',
     category: 'Gaming',
     price: 299,
-    image: '🎮',
     description: 'Consola portátil y de sobremesa'
   },
   {
@@ -49,7 +44,6 @@ export const predefinedGoals = [
     name: 'AirPods Pro',
     category: 'Audio',
     price: 279,
-    image: '🎧',
     description: 'Auriculares inalámbricos con cancelación de ruido'
   },
   {
@@ -57,7 +51,6 @@ export const predefinedGoals = [
     name: 'Apple Watch',
     category: 'Tecnología',
     price: 449,
-    image: '⌚',
     description: 'Smartwatch para salud y fitness'
   },
   {
@@ -65,7 +58,6 @@ export const predefinedGoals = [
     name: 'Bicicleta eléctrica',
     category: 'Deporte',
     price: 1500,
-    image: '🚴',
     description: 'Movilidad sostenible y ejercicio'
   },
   {
@@ -73,7 +65,6 @@ export const predefinedGoals = [
     name: 'Viaje a París',
     category: 'Viajes',
     price: 800,
-    image: '🗼',
     description: 'Fin de semana romántico en la ciudad del amor',
     popular: true
   },
@@ -82,7 +73,6 @@ export const predefinedGoals = [
     name: 'Viaje a Tokio',
     category: 'Viajes',
     price: 2500,
-    image: '🗾',
     description: 'Aventura en el país del sol naciente'
   },
   {
@@ -90,7 +80,6 @@ export const predefinedGoals = [
     name: 'Viaje a Bali',
     category: 'Viajes',
     price: 1800,
-    image: '🏝️',
     description: 'Paraíso tropical y cultura fascinante'
   },
   {
@@ -98,7 +87,6 @@ export const predefinedGoals = [
     name: 'Viaje a Nueva York',
     category: 'Viajes',
     price: 1500,
-    image: '🗽',
     description: 'La ciudad que nunca duerme'
   },
   {
@@ -106,7 +94,6 @@ export const predefinedGoals = [
     name: 'Crucero por el Caribe',
     category: 'Viajes',
     price: 2000,
-    image: '🚢',
     description: 'Navega por islas paradisíacas'
   },
   {
@@ -114,7 +101,6 @@ export const predefinedGoals = [
     name: 'Año de gimnasio',
     category: 'Salud',
     price: 600,
-    image: '💪',
     description: 'Inversión en tu salud y bienestar',
     popular: true
   },
@@ -123,7 +109,6 @@ export const predefinedGoals = [
     name: 'Curso online especializado',
     category: 'Educación',
     price: 500,
-    image: '🎓',
     description: 'Invierte en tu formación profesional'
   },
   {
@@ -131,7 +116,6 @@ export const predefinedGoals = [
     name: 'Cámara profesional',
     category: 'Fotografía',
     price: 1200,
-    image: '📷',
     description: 'Captura momentos con calidad profesional'
   },
   {
@@ -139,7 +123,6 @@ export const predefinedGoals = [
     name: 'Scooter eléctrico',
     category: 'Movilidad',
     price: 800,
-    image: '🛵',
     description: 'Transporte ecológico y económico'
   },
   {
@@ -147,7 +130,6 @@ export const predefinedGoals = [
     name: 'Retiro de bienestar',
     category: 'Salud',
     price: 900,
-    image: '🧘',
     description: 'Fin de semana de relax y desconexión'
   },
   {
@@ -155,7 +137,6 @@ export const predefinedGoals = [
     name: 'Sofá nuevo',
     category: 'Hogar',
     price: 1000,
-    image: '🛋️',
     description: 'Renueva tu espacio de descanso'
   },
   {
@@ -163,7 +144,6 @@ export const predefinedGoals = [
     name: 'Smart TV 55"',
     category: 'Entretenimiento',
     price: 700,
-    image: '📺',
     description: 'Experiencia de cine en casa'
   }
 ];

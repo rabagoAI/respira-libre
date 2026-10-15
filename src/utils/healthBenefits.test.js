@@ -3,7 +3,8 @@ import {
   healthBenefits,
   getAchievedBenefits,
   getNextBenefit,
-  getTimeToNextBenefit
+  getTimeToNextBenefit,
+  formatDuration
 } from './healthBenefits';
 
 const titles = (benefits) => benefits.map(b => b.title);
@@ -38,5 +39,19 @@ describe('beneficios de salud por minutos', () => {
     expect(getAchievedBenefits(minutes)).toHaveLength(healthBenefits.length);
     expect(getNextBenefit(minutes)).toBeNull();
     expect(getTimeToNextBenefit(minutes)).toBeNull();
+  });
+});
+
+describe('formatDuration', () => {
+  it.each([
+    [20, '20 min'],
+    [120, '2 h'],
+    [720, '12 h'],
+    [24 * 60, '1 día'],
+    [3 * 24 * 60, '3 días'],
+    [365 * 24 * 60, '1 año'],
+    [5475 * 24 * 60, '15 años']
+  ])('%i min → %s', (minutes, expected) => {
+    expect(formatDuration(minutes)).toBe(expected);
   });
 });

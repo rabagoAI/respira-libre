@@ -1,10 +1,13 @@
 import { useState, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Calendar } from 'lucide-react';
+import { Plus, Trash2, Calendar, Target } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useDialog } from '../hooks/useDialog';
 import { predefinedGoals, getCategories } from '../data/predefinedGoals';
 import { calculateGoalProgress, formatCurrency } from '../utils/calculations';
+import { getCategoryIcon } from '../utils/icons';
+import RangeBar from './ui/RangeBar';
+import StatusPill from './ui/StatusPill';
 
 const SavingsGoals = ({ moneySaved, dailySavings }) => {
   const [goals, setGoals] = useLocalStorage('respiraLibre_goals', []);
@@ -36,7 +39,6 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
       addGoal({
         name: customGoal.name,
         price: parseFloat(customGoal.price),
-        image: '🎯',
         category: 'Personalizado'
       });
     }
@@ -74,110 +76,82 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
 
       {/* Objetivos activos */}
       {goals.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {goals.map((goal) => {
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+          {goals.map((goal, index) => {
             const progress = calculateGoalProgress(
               moneySaved,
               goal.price,
               dailySavings
             );
-            const isCompleted = parseFloat(progress.percentage) >= 100;
+            const percentage = parseFloat(progress.percentage);
+            const isCompleted = percentage >= 100;
+            const Icon = getCategoryIcon(goal.category);
 
             return (
-              <motion.div
+              <motion.article
                 key={goal.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className={`card relative overflow-hidden ${
-                  isCompleted ? 'border-2 border-success-400 bg-gradient-to-br from-success-50 to-green-50' : ''
-                }`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ delay: Math.min(index, 6) * 0.05 }}
+                className={`card !p-5 flex flex-col ${isCompleted ? '!border-success-300 ring-1 ring-success-200' : ''}`}
               >
-                {/* Botón eliminar */}
-                <button
-                  onClick={() => removeGoal(goal.id)}
-                  aria-label={`Eliminar objetivo ${goal.name}`}
-                  className="absolute top-4 right-4 p-2 hover:bg-red-100 rounded-lg transition-colors group"
-                >
-                  <Trash2 className="w-4 h-4 text-slate-400 group-hover:text-red-600" aria-hidden="true" />
-                </button>
-
-                {/* Icono y título */}
-                <div className="mb-4">
-                  <div className="text-5xl mb-3">{goal.image}</div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-1 pr-8">
-                    {goal.name}
-                  </h4>
-                  <p className="text-sm text-slate-500">{goal.category}</p>
+                {/* Cabecera: categoría y eliminar */}
+                <div className="flex items-center gap-3">
+                  <span className="w-11 h-11 rounded-2xl bg-white border border-white shadow-sm flex items-center justify-center text-slate-700">
+                    <Icon className="w-5 h-5" aria-hidden="true" />
+                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    {goal.category}
+                  </span>
+                  <button
+                    onClick={() => removeGoal(goal.id)}
+                    aria-label={`Eliminar objetivo ${goal.name}`}
+                    className="ml-auto w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
+                  </button>
                 </div>
 
-                {/* Precio objetivo */}
-                <div className="mb-4">
-                  <p className="text-sm text-slate-600 mb-1">Objetivo</p>
-                  <p className="text-2xl font-bold text-primary-600">
-                    {formatCurrency(goal.price)}
-                  </p>
+                {/* Nombre y precio */}
+                <h4 className="!text-lg font-semibold text-slate-800 mt-4">{goal.name}</h4>
+                <p className="text-3xl font-light text-slate-900 tabular-nums mt-1">
+                  {formatCurrency(goal.price)}
+                </p>
+
+                {/* Progreso */}
+                <div className="mt-5">
+                  <RangeBar
+                    value={percentage}
+                    startLabel={`${progress.percentage}%`}
+                    endLabel={isCompleted ? 'Conseguido' : `faltan ${formatCurrency(progress.remaining)}`}
+                  />
                 </div>
 
-                {/* Barra de progreso */}
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-slate-700">
-                      {progress.percentage}%
+                {/* Estado y estimación */}
+                <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-slate-200/70">
+                  <StatusPill variant={isCompleted ? 'done' : 'active'}>
+                    {isCompleted ? 'Conseguido' : 'Ahorrando'}
+                  </StatusPill>
+                  {!isCompleted && (
+                    <span className="flex items-center gap-1.5 text-xs text-slate-500 text-right">
+                      <Calendar className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                      {progress.daysRemaining > 0
+                        ? `~${progress.daysRemaining} ${progress.daysRemaining === 1 ? 'día' : 'días'}`
+                        : 'Reduce tu consumo para estimarlo'}
                     </span>
-                    <span className="text-sm text-slate-500">
-                      {isCompleted ? '¡Conseguido!' : formatCurrency(progress.remaining) + ' restantes'}
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(progress.percentage, 100)}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                      className={`h-full rounded-full ${
-                        isCompleted 
-                          ? 'bg-gradient-to-r from-success-400 to-success-600' 
-                          : 'bg-gradient-to-r from-primary-400 to-primary-600'
-                      }`}
-                    />
-                  </div>
+                  )}
                 </div>
-
-                {/* Días restantes */}
-                {!isCompleted && progress.daysRemaining > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Calendar className="w-4 h-4" />
-                    <span>
-                      Llegarás en aproximadamente {progress.daysRemaining} {progress.daysRemaining === 1 ? 'día' : 'días'}
-                    </span>
-                  </div>
-                )}
-
-                {!isCompleted && progress.daysRemaining === null && (
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Calendar className="w-4 h-4" />
-                    <span>
-                      Reduce tu consumo para estimar cuándo llegarás
-                    </span>
-                  </div>
-                )}
-
-                {isCompleted && (
-                  <div className="text-center py-2">
-                    <span className="text-2xl">🎉</span>
-                    <p className="text-success-600 font-semibold mt-1">
-                      ¡Meta alcanzada!
-                    </p>
-                  </div>
-                )}
-              </motion.div>
+              </motion.article>
             );
           })}
         </div>
       ) : (
         <div className="card text-center py-12 mb-12">
-          <div className="text-6xl mb-4">🎯</div>
-          <h4 className="text-xl font-bold text-slate-900 mb-2">
+          <span className="mx-auto w-14 h-14 rounded-2xl bg-white border border-white shadow-sm flex items-center justify-center text-slate-600">
+            <Target className="w-6 h-6" aria-hidden="true" />
+          </span>
+          <h4 className="!text-xl font-semibold text-slate-800 mt-4 mb-2">
             Aún no tienes objetivos
           </h4>
           <p className="text-slate-600 mb-6">
@@ -291,27 +265,34 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
 
                 {/* Objetivos predefinidos */}
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {filteredPredefinedGoals.map((goal) => (
-                    <button
-                      key={goal.id}
-                      onClick={() => addGoal(goal)}
-                      className="text-left p-4 rounded-xl border-2 border-slate-200 hover:border-primary-400 hover:shadow-lg transition-all group"
-                    >
-                      <div className="text-4xl mb-2">{goal.image}</div>
-                      <h5 className="font-bold text-slate-900 mb-1 group-hover:text-primary-600 transition-colors">
-                        {goal.name}
-                      </h5>
-                      <p className="text-sm text-slate-500 mb-2">{goal.description}</p>
-                      <p className="text-lg font-bold text-primary-600">
-                        {formatCurrency(goal.price)}
-                      </p>
-                      {goal.popular && (
-                        <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded">
-                          Popular
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                  {filteredPredefinedGoals.map((goal) => {
+                    const Icon = getCategoryIcon(goal.category);
+                    return (
+                      <button
+                        key={goal.id}
+                        onClick={() => addGoal(goal)}
+                        className="text-left p-4 rounded-2xl border border-slate-200 bg-white/70 hover:border-primary-300 hover:bg-white hover:shadow-lg transition-all group"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 group-hover:text-primary-600 transition-colors">
+                            <Icon className="w-5 h-5" aria-hidden="true" />
+                          </span>
+                          {goal.popular && (
+                            <span className="rounded-full border-[1.5px] border-amber-300 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                              Popular
+                            </span>
+                          )}
+                        </div>
+                        <h5 className="font-semibold text-slate-900 mt-3 mb-1 group-hover:text-primary-700 transition-colors">
+                          {goal.name}
+                        </h5>
+                        <p className="!text-sm !text-slate-500 mb-2">{goal.description}</p>
+                        <p className="text-lg font-light text-slate-900 tabular-nums">
+                          {formatCurrency(goal.price)}
+                        </p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
