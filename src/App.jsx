@@ -8,7 +8,6 @@ import { toLocalDateString } from './utils/dates';
 function App() {
   // Estado principal de la aplicación
   const [userData, setUserData] = useLocalStorage('respiraLibre_userData', null);
-  const [showOnboarding, setShowOnboarding] = useState(!userData);
   const [showSettings, setShowSettings] = useState(false);
 
   // Maneja el envío del formulario de inicio
@@ -24,7 +23,6 @@ function App() {
     };
     
     setUserData(journeyData);
-    setShowOnboarding(false);
   };
 
   // Reinicia completamente la aplicación
@@ -37,7 +35,6 @@ function App() {
     
     // Mostrar formulario inicial
     setShowSettings(false);
-    setShowOnboarding(true);
   };
 
   return (
@@ -45,8 +42,8 @@ function App() {
       {/* Hero siempre visible */}
       <Hero hasStarted={!!userData} onEditSettings={() => setShowSettings(true)} />
 
-      {/* Mostrar formulario o dashboard según el estado */}
-      {showOnboarding ? (
+      {/* Sin datos se muestra el formulario (también si se borran desde otra pestaña) */}
+      {!userData ? (
         <OnboardingForm onSubmit={handleStartJourney} />
       ) : (
         <Dashboard

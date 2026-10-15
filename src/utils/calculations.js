@@ -71,9 +71,12 @@ export const calculateGoalProgress = (
   goalPrice,
   dailySavings
 ) => {
-  const percentage = Math.min((saved / goalPrice) * 100, 100);
+  const percentage = goalPrice > 0 ? Math.min(Math.max((saved / goalPrice) * 100, 0), 100) : 100;
   const remaining = goalPrice - saved;
-  const daysRemaining = remaining > 0 ? Math.ceil(remaining / dailySavings) : 0;
+  // Sin ahorro diario positivo no se puede estimar cuándo se alcanzará (null)
+  const daysRemaining = remaining <= 0
+    ? 0
+    : dailySavings > 0 ? Math.ceil(remaining / dailySavings) : null;
 
   return {
     percentage: percentage.toFixed(1),

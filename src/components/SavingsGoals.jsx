@@ -148,6 +148,15 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
                   </div>
                 )}
 
+                {!isCompleted && progress.daysRemaining === null && (
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Reduce tu consumo para estimar cuándo llegarás
+                    </span>
+                  </div>
+                )}
+
                 {isCompleted && (
                   <div className="text-center py-2">
                     <span className="text-2xl">🎉</span>

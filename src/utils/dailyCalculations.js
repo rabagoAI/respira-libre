@@ -1,7 +1,12 @@
-import { differenceInCalendarDays, differenceInDays, parseISO } from 'date-fns';
+import { addDays, differenceInCalendarDays, startOfDay } from 'date-fns';
+import { toLocalDateString } from './dates';
 
 /**
  * Calcula el ahorro real basado en el registro diario
+ * Recorre cada día desde la fecha de inicio hasta hoy (incluido):
+ * - Días con registro: usa el valor registrado
+ * - Días sin registro: usa el último valor conocido
+ *   (cigarettesPerDayNow antes del primer registro)
  * @param {Object} userData - Datos del usuario con dailyLog
  * @returns {Object} Dinero ahorrado y cigarrillos evitados
  */
@@ -12,73 +17,51 @@ export const calculateRealSavings = (userData) => {
     cigarettesPerPack, 
     cigarettesPerDayBefore, 
     cigarettesPerDayNow,
-    dailyLog 
+    dailyLog = {}
   } = userData;
 
   const pricePerCigarette = packPrice / cigarettesPerPack;
-  const startDate = new Date(quitDate);
-  const today = new Date();
-  const daysSince = differenceInDays(today, startDate);
+  const startDate = startOfDay(new Date(quitDate));
+  const totalDays = Math.max(differenceInCalendarDays(new Date(), startDate) + 1, 1);
 
   let totalCigarettesAvoided = 0;
-  let totalMoneySaved = 0;
-
-  // Si no hay registro diario, usar el método antiguo
-  if (!dailyLog || Object.keys(dailyLog).length === 0) {
-    const dailyReduction = cigarettesPerDayBefore - cigarettesPerDayNow;
-    totalCigarettesAvoided = dailyReduction * Math.max(daysSince, 1);
-    totalMoneySaved = totalCigarettesAvoided * pricePerCigarette;
-    
-    return {
-      totalMoneySaved,
-      totalCigarettesAvoided,
-      averageDaily: cigarettesPerDayNow,
-      daysTracked: 0
-    };
-  }
-
-  // Calcular día por día usando el registro
-  const logDates = Object.keys(dailyLog).sort();
-  // Las claves del registro son fechas locales yyyy-MM-dd
-  const firstLogDate = parseISO(logDates[0]);
-  const lastLogDate = parseISO(logDates[logDates.length - 1]);
-
-  // Días antes del primer registro: usar cigarettesPerDayNow inicial
-  const daysBeforeLog = differenceInCalendarDays(firstLogDate, startDate);
-  if (daysBeforeLog > 0) {
-    const reduction = cigarettesPerDayBefore - cigarettesPerDayNow;
-    totalCigarettesAvoided += reduction * daysBeforeLog;
-  }
-
-  // Días con registro: usar valores reales
   let totalConsumed = 0;
   let daysTracked = 0;
+  let lastKnown = cigarettesPerDayNow;
 
-  logDates.forEach(dateStr => {
-    const consumed = dailyLog[dateStr];
-    const reduction = cigarettesPerDayBefore - consumed;
-    totalCigarettesAvoided += reduction;
-    totalConsumed += consumed;
-    daysTracked++;
-  });
+  for (let i = 0; i < totalDays; i++) {
+    const dateStr = toLocalDateString(addDays(startDate, i));
+    const logged = dailyLog[dateStr];
 
-  // Días después del último registro hasta hoy: usar último valor registrado
-  const daysSinceLastLog = differenceInCalendarDays(today, lastLogDate);
-  if (daysSinceLastLog > 0) {
-    const lastConsumed = dailyLog[logDates[logDates.length - 1]];
-    const reduction = cigarettesPerDayBefore - lastConsumed;
-    totalCigarettesAvoided += reduction * daysSinceLastLog;
+    if (logged !== undefined) {
+      lastKnown = logged;
+      totalConsumed += logged;
+      daysTracked++;
+    }
+
+    totalCigarettesAvoided += cigarettesPerDayBefore - lastKnown;
   }
 
-  totalMoneySaved = totalCigarettesAvoided * pricePerCigarette;
   const averageDaily = daysTracked > 0 ? totalConsumed / daysTracked : cigarettesPerDayNow;
 
   return {
-    totalMoneySaved,
+    totalMoneySaved: totalCigarettesAvoided * pricePerCigarette,
     totalCigarettesAvoided,
     averageDaily: Math.round(averageDaily * 10) / 10,
     daysTracked
   };
+};
+
+/**
+ * Obtiene el consumo más reciente registrado
+ * @param {Object} userData - Datos del usuario con dailyLog
+ * @returns {number} Último valor del registro o cigarettesPerDayNow si no hay
+ */
+export const getCurrentConsumption = (userData) => {
+  const dates = Object.keys(userData.dailyLog || {}).sort();
+  return dates.length > 0
+    ? userData.dailyLog[dates[dates.length - 1]]
+    : userData.cigarettesPerDayNow;
 };
 
 /**
@@ -115,6 +98,13 @@ export const getTrendStats = (dailyLog) => {
 
   const first = dailyLog[lastWeek[0]];
   const last = dailyLog[lastWeek[lastWeek.length - 1]];
+
+  // Si se partía de 0 no hay porcentaje posible: cualquier cigarrillo es empeorar
+  if (first === 0) {
+    return last === 0
+      ? { trend: 'stable', percentage: 0 }
+      : { trend: 'worsening', percentage: 100 };
+  }
   
   const change = ((last - first) / first) * 100;
 

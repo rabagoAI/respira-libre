@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Cigarette, Euro, Calendar, ArrowRight } from 'lucide-react';
 import { toLocalDateString, parseLocalDate } from '../utils/dates';
+import { validateUserData } from '../utils/validation';
 
 const OnboardingForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -30,32 +31,7 @@ const OnboardingForm = ({ onSubmit }) => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.packPrice || parseFloat(formData.packPrice) <= 0) {
-      newErrors.packPrice = 'Introduce un precio válido';
-    }
-
-    if (!formData.cigarettesPerPack || parseInt(formData.cigarettesPerPack) <= 0) {
-      newErrors.cigarettesPerPack = 'Introduce una cantidad válida';
-    }
-
-    if (!formData.cigarettesPerDayBefore || parseInt(formData.cigarettesPerDayBefore) <= 0) {
-      newErrors.cigarettesPerDayBefore = 'Introduce cuántos cigarrillos fumabas';
-    }
-
-    if (formData.cigarettesPerDayNow === '') {
-      newErrors.cigarettesPerDayNow = 'Introduce cuántos fumas ahora (0 si lo dejaste)';
-    }
-
-    if (parseInt(formData.cigarettesPerDayNow) >= parseInt(formData.cigarettesPerDayBefore)) {
-      newErrors.cigarettesPerDayNow = 'Debe ser menor que lo que fumabas antes';
-    }
-
-    if (!formData.quitDate) {
-      newErrors.quitDate = 'Selecciona una fecha';
-    }
-
+    const newErrors = validateUserData(formData);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

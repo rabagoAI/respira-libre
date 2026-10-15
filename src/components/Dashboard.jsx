@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, 
   Cigarette, 
@@ -13,7 +13,7 @@ import {
   calculateDailySavings,
   formatCurrency
 } from '../utils/calculations';
-import { calculateRealSavings, getMovingAverage, getTrendStats } from '../utils/dailyCalculations';
+import { calculateRealSavings, getCurrentConsumption, getMovingAverage, getTrendStats } from '../utils/dailyCalculations';
 import { differenceInMinutes } from 'date-fns';
 import HealthTimeline from './HealthTimeline';
 import SavingsGoals from './SavingsGoals';
@@ -81,7 +81,9 @@ const Dashboard = ({
     );
   }
 
-  const isCompletelyQuit = userData.cigarettesPerDayNow === 0;
+  // Consumo actual = último día registrado (o el valor inicial si no hay registro)
+  const currentConsumption = getCurrentConsumption(userData);
+  const isCompletelyQuit = currentConsumption === 0;
   const movingAverage = getMovingAverage(userData.dailyLog, 7);
   const trendStats = getTrendStats(userData.dailyLog);
 
@@ -107,7 +109,7 @@ const Dashboard = ({
         <p className="text-lg text-slate-600">
           {stats.daysTracked > 0 
             ? `Promedio últimos 7 días: ${movingAverage} cigarrillos/día`
-            : `Has reducido tu consumo de ${userData.cigarettesPerDayBefore} a ${userData.cigarettesPerDayNow} cigarrillos al día`
+            : `Has reducido tu consumo de ${userData.cigarettesPerDayBefore} a ${currentConsumption} cigarrillos al día`
           }
         </p>
       </motion.div>
@@ -182,7 +184,7 @@ const Dashboard = ({
               {stats.cigarettesAvoided.toLocaleString('es-ES')}
             </p>
             <p className="text-sm text-slate-500">
-              {stats.averageDaily ? `Promedio: ${stats.averageDaily}/día` : `${userData.cigarettesPerDayBefore - userData.cigarettesPerDayNow} menos/día`}
+              {stats.daysTracked > 0 ? `Promedio: ${stats.averageDaily}/día` : `${userData.cigarettesPerDayBefore - currentConsumption} menos/día`}
             </p>
           </div>
         </motion.div>
@@ -244,12 +246,12 @@ const Dashboard = ({
                 <div 
                   className="bg-success-500 h-full rounded-full transition-all duration-500"
                   style={{ 
-                    width: `${(userData.cigarettesPerDayNow / userData.cigarettesPerDayBefore) * 100}%` 
+                    width: `${Math.min((currentConsumption / userData.cigarettesPerDayBefore) * 100, 100)}%` 
                   }}
                 ></div>
               </div>
               <span className="text-2xl font-bold text-success-600 min-w-[60px]">
-                {userData.cigarettesPerDayNow}
+                {currentConsumption}
               </span>
             </div>
             <p className="text-xs text-slate-500">cigarrillos al día</p>
@@ -260,7 +262,7 @@ const Dashboard = ({
         <div className="mt-6 text-center p-4 bg-gradient-to-r from-success-50 to-primary-50 rounded-xl">
           <p className="text-sm text-slate-600 mb-1">Has reducido tu consumo en</p>
           <p className="text-3xl font-bold text-success-600">
-            {(((userData.cigarettesPerDayBefore - userData.cigarettesPerDayNow) / userData.cigarettesPerDayBefore) * 100).toFixed(0)}%
+            {(((userData.cigarettesPerDayBefore - currentConsumption) / userData.cigarettesPerDayBefore) * 100).toFixed(0)}%
           </p>
         </div>
       </motion.div>
@@ -274,15 +276,18 @@ const Dashboard = ({
         dailySavings={stats.dailySavings}
       />
 
-      {showSettings && (
-        <SettingsModal
-          isOpen={showSettings}
-          onClose={onCloseSettings}
-          userData={userData}
-          onSave={onUpdateData}
-          onReset={onReset}
-        />
-      )}
+      {/* AnimatePresence aquí para que el modal anime también al cerrarse */}
+      <AnimatePresence>
+        {showSettings && (
+          <SettingsModal
+            key="settings"
+            onClose={onCloseSettings}
+            userData={userData}
+            onSave={onUpdateData}
+            onReset={onReset}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
