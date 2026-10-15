@@ -88,7 +88,7 @@ const OnboardingForm = ({ onSubmit }) => {
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-slate-800 hover:bg-slate-900 text-white font-semibold text-lg px-6 py-3.5 shadow-lg shadow-slate-900/20 transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-slate-800 hover:bg-slate-900 text-slate-50 font-semibold text-lg px-6 py-3.5 shadow-lg shadow-slate-900/20 transition-colors"
               >
                 Comenzar mi camino
                 <ArrowRight className="w-5 h-5" aria-hidden="true" />
@@ -111,7 +111,7 @@ const OnboardingForm = ({ onSubmit }) => {
             </div>
 
             <div className="mt-auto pt-6">
-              <div className="rounded-2xl bg-slate-800/90 text-white p-4 flex gap-3">
+              <div className="theme-fixed rounded-2xl bg-slate-800/90 text-white p-4 flex gap-3">
                 <Lock className="w-5 h-5 text-success-300 shrink-0" aria-hidden="true" />
                 <p className="!text-xs !text-slate-300 leading-relaxed">
                   Tus datos se guardan solo en tu navegador. Nadie más puede verlos y puedes exportarlos cuando quieras.

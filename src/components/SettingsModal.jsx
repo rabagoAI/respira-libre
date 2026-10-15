@@ -7,6 +7,7 @@ import { useUserDataForm } from '../hooks/useUserDataForm';
 import { useDialog } from '../hooks/useDialog';
 import UserDataFields from './UserDataFields';
 import ReminderSettings from './ReminderSettings';
+import ThemeSelector from './ThemeSelector';
 
 const USER_DATA_KEY = 'respiraLibre_userData';
 const GOALS_KEY = 'respiraLibre_goals';
@@ -20,7 +21,7 @@ const getInitialFormData = (userData) => ({
   quitDate: toLocalDateString(userData?.quitDate ? new Date(userData.quitDate) : new Date())
 });
 
-const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
+const SettingsModal = ({ onClose, userData, onSave, onReset, theme }) => {
   // El modal se monta al abrirse (Dashboard lo envuelve en AnimatePresence), así que el formulario parte siempre de los datos actuales
   const { formData, errors, handleChange, getValidatedData } = useUserDataForm(getInitialFormData(userData));
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -148,6 +149,9 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
 
           {/* Acciones secundarias (en la zona con scroll para que el pie quepa en pantallas bajas) */}
           <div className="mt-8 pt-6 border-t border-slate-200 space-y-4">
+            {/* Apariencia */}
+            <ThemeSelector theme={theme} />
+
             {/* Recordatorio diario */}
             <ReminderSettings userData={userData} onSave={onSave} />
 

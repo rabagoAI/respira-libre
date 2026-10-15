@@ -96,7 +96,7 @@ const BodyPanel = ({ systems, selected, onSelect, achievedCount, totalBenefits, 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ delay: 0.4 }}
-            className="absolute left-3 sm:left-4 bottom-3 sm:bottom-4 w-[calc(100%-4.5rem)] sm:w-60 rounded-2xl bg-slate-800/75 backdrop-blur-xl text-white p-3 sm:p-4 shadow-xl border border-white/10"
+            className="theme-fixed absolute left-3 sm:left-4 bottom-3 sm:bottom-4 w-[calc(100%-4.5rem)] sm:w-60 rounded-2xl bg-slate-800/75 backdrop-blur-xl text-white p-3 sm:p-4 shadow-xl border border-white/10"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-baseline gap-2">

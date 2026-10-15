@@ -33,7 +33,7 @@ const AchievementToast = ({ achievements, onDismiss }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-            className="pointer-events-auto relative flex items-center gap-4 rounded-3xl bg-slate-900/90 backdrop-blur-xl text-white pl-4 pr-3 py-3 shadow-2xl border border-white/10 max-w-sm w-full"
+            className="theme-fixed pointer-events-auto relative flex items-center gap-4 rounded-3xl bg-slate-900/90 backdrop-blur-xl text-white pl-4 pr-3 py-3 shadow-2xl border border-white/10 max-w-sm w-full"
           >
             {/* Icono con estallido de partículas */}
             <span className="relative shrink-0 w-14 h-14">

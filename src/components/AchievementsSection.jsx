@@ -115,7 +115,7 @@ const AchievementsSection = ({ streaks, achievements }) => {
               type="button"
               onClick={() => setFilter(id)}
               aria-pressed={filter === id}
-              className={`relative rounded-full px-3.5 py-1.5 text-sm transition-colors ${filter === id ? 'text-white' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`relative rounded-full px-3.5 py-1.5 text-sm transition-colors ${filter === id ? 'text-slate-50' : 'text-slate-600 hover:text-slate-900'}`}
             >
               {filter === id && (
                 <motion.span layoutId="achievements-filter" className="absolute inset-0 rounded-full bg-slate-800" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />

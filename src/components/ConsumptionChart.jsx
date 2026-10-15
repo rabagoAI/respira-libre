@@ -21,9 +21,13 @@ const COLORS = {
   free: '#22c55e',      // success-500: día sin fumar
   reduced: '#0ea5e9',   // primary-500: por debajo del consumo anterior
   above: '#f97316',     // orange-500: igual o por encima del consumo anterior
-  before: '#f97316',
-  grid: '#e2e8f0',
-  axis: '#64748b'
+  before: '#f97316'
+};
+
+// Colores de los ejes según el tema
+const AXIS_COLORS = {
+  light: { grid: '#e2e8f0', axis: '#64748b', cursor: '#f1f5f9' },
+  dark: { grid: '#1e293b', axis: '#94a3b8', cursor: '#131c2e' }
 };
 
 const TREND_INFO = {
@@ -56,7 +60,8 @@ const ChartTooltip = ({ active, payload }) => {
   );
 };
 
-const ConsumptionChart = ({ userData }) => {
+const ConsumptionChart = ({ userData, isDark = false }) => {
+  const axis = AXIS_COLORS[isDark ? 'dark' : 'light'];
   const data = getChartData(userData.dailyLog, userData.quitDate, 30);
   const loggedDays = data.filter(d => d.value !== null).length;
   const trend = TREND_INFO[getTrendStats(userData.dailyLog).trend];
@@ -91,24 +96,24 @@ const ConsumptionChart = ({ userData }) => {
           <div className="h-64" role="img" aria-label={`Gráfica de consumo diario con ${loggedDays} días registrados`}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.grid} vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={axis.grid} vertical={false} />
                 <XAxis
                   dataKey="date"
                   tickFormatter={formatShortDate}
-                  tick={{ fontSize: 12, fill: COLORS.axis }}
+                  tick={{ fontSize: 12, fill: axis.axis }}
                   tickLine={false}
-                  axisLine={{ stroke: COLORS.grid }}
+                  axisLine={{ stroke: axis.grid }}
                   interval="preserveStartEnd"
                   minTickGap={16}
                 />
                 <YAxis
                   allowDecimals={false}
                   domain={[0, (max) => Math.max(max, before)]}
-                  tick={{ fontSize: 12, fill: COLORS.axis }}
+                  tick={{ fontSize: 12, fill: axis.axis }}
                   tickLine={false}
                   axisLine={false}
                 />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f1f5f9' }} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: axis.cursor }} />
                 <ReferenceLine
                   y={before}
                   stroke={COLORS.before}

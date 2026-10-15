@@ -5,6 +5,7 @@ import BodyFigure from './BodyFigure';
 import { getRecoverySystems } from '../utils/recovery';
 import { scrollToSection } from '../utils/scroll';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
+import ThemeToggle from './ThemeToggle';
 
 const DAY = 24 * 60;
 
@@ -27,7 +28,7 @@ const FEATURES = [
 /**
  * Portada para quien todavía no ha empezado
  */
-const Hero = () => {
+const Hero = ({ theme }) => {
   const [stageIndex, setStageIndex] = useState(0);
   const { canInstall, install } = useInstallPrompt();
   const stage = DEMO_STAGES[stageIndex];
@@ -40,7 +41,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#0b1d42] text-white rounded-b-[40px] sm:rounded-b-[64px] shadow-2xl shadow-[#0b1d42]/30">
+    <section className="theme-fixed relative overflow-hidden bg-[#0b1d42] text-white rounded-b-[40px] sm:rounded-b-[64px] shadow-2xl shadow-[#0b1d42]/30">
       {/* Fondo: degradado profundo con anillos tipo hélice */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0b1d42] via-[#123172] to-[#0a1a3a]" />
@@ -65,9 +66,12 @@ const Hero = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 lg:pb-24">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="" className="w-9 h-9" />
-          <span className="font-semibold text-lg">Respira <span className="text-success-300">Libre</span></span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <img src="/favicon.svg" alt="" className="w-9 h-9" />
+            <span className="font-semibold text-lg">Respira <span className="text-success-300">Libre</span></span>
+          </div>
+          <ThemeToggle theme={theme} className="bg-white/10 hover:bg-white/20 text-white border border-white/15" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-6 items-center mt-12 lg:mt-6">

@@ -137,7 +137,7 @@ const BreathingModal = ({ onClose, onComplete }) => {
           <button
             type="button"
             onClick={() => setState({ ...INITIAL, status: 'running' })}
-            className="inline-flex items-center gap-2 rounded-full bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-3 shadow-lg transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-slate-800 hover:bg-slate-900 text-slate-50 font-semibold px-6 py-3 shadow-lg transition-colors"
           >
             <Play className="w-4 h-4" aria-hidden="true" />
             Empezar
@@ -161,7 +161,7 @@ const BreathingModal = ({ onClose, onComplete }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2.5 transition-colors"
+                className="rounded-full bg-slate-800 hover:bg-slate-900 text-slate-50 font-semibold px-5 py-2.5 transition-colors"
               >
                 Cerrar
               </button>

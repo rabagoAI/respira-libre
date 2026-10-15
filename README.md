@@ -15,6 +15,7 @@ Una aplicación web para ayudar a las personas a dejar de fumar, visualizando su
 - 💾 **Copia de seguridad** exportable e importable en JSON
 - 🏆 **Rachas y logros**, y respiración guiada para los momentos de ganas de fumar
 - 📲 **App instalable** que funciona sin conexión, con recordatorio diario opcional
+- 🌙 **Modo oscuro** automático según el sistema, o elegido a mano
 - 📱 **Diseño responsive** que funciona en todos los dispositivos
 - 🔒 **Privacidad total** - tus datos solo se guardan en tu navegador
 

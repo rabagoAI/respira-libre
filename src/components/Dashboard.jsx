@@ -47,6 +47,7 @@ const getUnlockedIds = (userData) =>
 const ConsumptionChart = lazy(() => import('./ConsumptionChart'));
 
 const Dashboard = ({
+  theme,
   userData,
   onUpdateData,
   onReset,
@@ -143,7 +144,7 @@ const Dashboard = ({
             className="mb-4"
             role="status"
           >
-            <div className="flex items-center gap-3 rounded-3xl bg-primary-600 text-white pl-4 pr-2 py-2.5 shadow-lg shadow-primary-600/20">
+            <div className="theme-fixed flex items-center gap-3 rounded-3xl bg-primary-600 text-white pl-4 pr-2 py-2.5 shadow-lg shadow-primary-600/20">
               <BellRing className="w-5 h-5 shrink-0" aria-hidden="true" />
               <p className="!text-sm !text-white flex-1">Aún no has registrado tu consumo de hoy.</p>
               <button
@@ -214,7 +215,7 @@ const Dashboard = ({
       {/* Evolución del consumo diario */}
       <div id="evolucion" className="scroll-mt-24 mt-10">
         <Suspense fallback={<div className="card mb-12 h-80 animate-pulse" aria-hidden="true" />}>
-          <ConsumptionChart userData={userData} />
+          <ConsumptionChart userData={userData} isDark={theme.isDark} />
         </Suspense>
       </div>
 
@@ -243,7 +244,7 @@ const Dashboard = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1 }}
-        className="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-40 inline-flex items-center gap-2 rounded-full bg-slate-900/90 backdrop-blur-xl text-white pl-4 pr-5 py-3 shadow-2xl shadow-slate-900/30 border border-white/10 hover:bg-slate-900 transition-colors"
+        className="theme-fixed fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-40 inline-flex items-center gap-2 rounded-full bg-slate-900/90 backdrop-blur-xl text-white pl-4 pr-5 py-3 shadow-2xl shadow-slate-900/30 border border-white/10 hover:bg-slate-900 transition-colors"
       >
         <span className="relative flex w-6 h-6 items-center justify-center">
           <motion.span
@@ -282,6 +283,7 @@ const Dashboard = ({
             userData={userData}
             onSave={onUpdateData}
             onReset={onReset}
+            theme={theme}
           />
         )}
       </AnimatePresence>

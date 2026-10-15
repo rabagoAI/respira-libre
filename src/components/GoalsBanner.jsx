@@ -11,7 +11,7 @@ const GoalsBanner = ({ moneySaved, dailySavings, onShowGoals }) => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-700 via-primary-800 to-primary-700 text-white p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+      className="theme-fixed relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-700 via-primary-800 to-primary-700 text-white p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4"
     >
       <div className="absolute -right-10 -top-16 w-48 h-48 rounded-full bg-primary-400/30 blur-2xl" aria-hidden="true" />
       <motion.div

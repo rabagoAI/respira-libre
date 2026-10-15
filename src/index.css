@@ -46,6 +46,8 @@
   
   .input-field {
     @apply w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-2xl shadow-sm focus:bg-white focus:border-primary-400 focus:ring-4 focus:ring-primary-100 outline-none transition-all duration-200;
+    /* En oscuro, el campo queda más hundido que la tarjeta que lo contiene */
+    @apply dark:bg-slate-50/70 dark:border-slate-300 dark:focus:bg-slate-50;
   }
   
   .stat-card {

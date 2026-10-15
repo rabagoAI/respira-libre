@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useTheme } from './hooks/useTheme';
 import Hero from './components/Hero';
 import TopBar from './components/TopBar';
 import Footer from './components/Footer';
@@ -11,6 +12,7 @@ import { toLocalDateString } from './utils/dates';
 function App() {
   // Estado principal de la aplicación
   const [userData, setUserData] = useLocalStorage('respiraLibre_userData', null);
+  const theme = useTheme();
   const [showSettings, setShowSettings] = useState(false);
 
   // Maneja el envío del formulario de inicio
@@ -48,7 +50,7 @@ function App() {
       <div className="min-h-screen">
         {/* Fondo decorativo común (la portada pone encima su propio fondo oscuro) */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-[#e6edf7] to-[#d5e1f0]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-[#e6edf7] to-[#d5e1f0] dark:via-[#0e1830] dark:to-[#0a1326]" />
           <div className="absolute -top-40 -left-32 w-[36rem] h-[36rem] rounded-full bg-primary-300/30 blur-3xl" />
           <div className="absolute top-1/3 -right-40 w-[32rem] h-[32rem] rounded-full bg-indigo-300/25 blur-3xl" />
           <div className="absolute -bottom-40 left-1/3 w-[30rem] h-[30rem] rounded-full bg-success-200/30 blur-3xl" />
@@ -56,9 +58,9 @@ function App() {
 
         {/* Con datos: barra del panel; sin datos: portada */}
         {userData ? (
-          <TopBar userData={userData} onOpenSettings={() => setShowSettings(true)} />
+          <TopBar userData={userData} onOpenSettings={() => setShowSettings(true)} theme={theme} />
         ) : (
-          <Hero />
+          <Hero theme={theme} />
         )}
 
         {/* Sin datos se muestra el formulario (también si se borran desde otra pestaña) */}
@@ -66,6 +68,7 @@ function App() {
           <OnboardingForm onSubmit={handleStartJourney} />
         ) : (
           <Dashboard
+            theme={theme}
             userData={userData}
             onUpdateData={setUserData}
             onReset={handleReset}

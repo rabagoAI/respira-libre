@@ -4,6 +4,7 @@ import { LayoutDashboard, LineChart, Trophy, HeartPulse, Target, Settings, Flame
 import { differenceInCalendarDays } from 'date-fns';
 import { scrollToSection } from '../utils/scroll';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
+import ThemeToggle from './ThemeToggle';
 
 const NAV_ITEMS = [
   { id: 'panel', label: 'Panel', icon: LayoutDashboard },
@@ -16,7 +17,7 @@ const NAV_ITEMS = [
 /**
  * Barra superior fija del panel (sustituye al Hero cuando ya hay datos)
  */
-const TopBar = ({ userData, onOpenSettings }) => {
+const TopBar = ({ userData, onOpenSettings, theme }) => {
   const [active, setActive] = useState('panel');
   const { canInstall, install } = useInstallPrompt();
   const days = Math.max(differenceInCalendarDays(new Date(), new Date(userData.quitDate)), 0);
@@ -48,7 +49,7 @@ const TopBar = ({ userData, onOpenSettings }) => {
                   aria-current={active === id ? 'true' : undefined}
                   aria-label={label}
                   className={`relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-colors ${
-                    active === id ? 'text-white' : 'text-slate-600 hover:text-slate-900'
+                    active === id ? 'text-slate-50' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {active === id && (
@@ -74,7 +75,7 @@ const TopBar = ({ userData, onOpenSettings }) => {
               onClick={install}
               aria-label="Instalar la app"
               title="Instalar la app"
-              className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-slate-50 px-3 py-2 text-sm font-semibold transition-colors"
             >
               <Download className="w-4 h-4" aria-hidden="true" />
               <span className="hidden lg:inline">Instalar</span>
@@ -84,6 +85,7 @@ const TopBar = ({ userData, onOpenSettings }) => {
             <Flame className="w-4 h-4" aria-hidden="true" />
             {days} {days === 1 ? 'día' : 'días'}
           </span>
+          <ThemeToggle theme={theme} className="hidden sm:flex bg-slate-100 hover:bg-slate-200 text-slate-600" />
           <button
             type="button"
             onClick={onOpenSettings}

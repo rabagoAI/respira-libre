@@ -13,6 +13,16 @@
     <title>Respira Libre · Tu progreso al dejar de fumar</title>
     <meta name="description" content="Calcula cuánto dinero ahorras, registra tu consumo diario y sigue los beneficios para tu salud al dejar de fumar. Tus datos se quedan en tu navegador." />
 
+    <!-- Aplicar el tema antes de pintar para evitar un destello claro (ver src/hooks/useTheme.js) -->
+    <script>
+      try {
+        var t = localStorage.getItem('respiraLibre_theme');
+        if (t === 'dark' || ((!t || t === 'system') && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    </script>
+
     <!-- Open Graph / redes sociales -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
