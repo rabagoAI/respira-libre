@@ -110,69 +110,55 @@ export const healthBenefits = [
   }
 ];
 
+const MINUTES_PER_DAY = 24 * 60;
+
 /**
- * Obtiene los beneficios alcanzados según los días sin fumar
- * @param {number} daysSinceQuit - Días desde que dejó de fumar
+ * Minutos sin fumar necesarios para alcanzar un beneficio
+ * @param {Object} benefit - Beneficio con `minutes` o `days`
+ * @returns {number} Minutos necesarios
+ */
+const getBenefitMinutes = (benefit) =>
+  benefit.minutes ?? benefit.days * MINUTES_PER_DAY;
+
+/**
+ * Obtiene los beneficios alcanzados según los minutos sin fumar
+ * @param {number} minutesSinceQuit - Minutos desde que dejó de fumar
  * @returns {Array} Array de beneficios alcanzados
  */
-export const getAchievedBenefits = (daysSinceQuit) => {
-  const minutesSinceQuit = daysSinceQuit * 24 * 60;
-  
-  return healthBenefits.filter(benefit => {
-    if (benefit.minutes) {
-      return minutesSinceQuit >= benefit.minutes;
-    }
-    if (benefit.days) {
-      return daysSinceQuit >= benefit.days;
-    }
-    return false;
-  });
+export const getAchievedBenefits = (minutesSinceQuit) => {
+  return healthBenefits.filter(benefit => minutesSinceQuit >= getBenefitMinutes(benefit));
 };
 
 /**
  * Obtiene el siguiente beneficio a alcanzar
- * @param {number} daysSinceQuit - Días desde que dejó de fumar
+ * @param {number} minutesSinceQuit - Minutos desde que dejó de fumar
  * @returns {Object|null} Siguiente beneficio o null si alcanzó todos
  */
-export const getNextBenefit = (daysSinceQuit) => {
-  const minutesSinceQuit = daysSinceQuit * 24 * 60;
-  
-  return healthBenefits.find(benefit => {
-    if (benefit.minutes) {
-      return minutesSinceQuit < benefit.minutes;
-    }
-    if (benefit.days) {
-      return daysSinceQuit < benefit.days;
-    }
-    return false;
-  });
+export const getNextBenefit = (minutesSinceQuit) => {
+  return healthBenefits.find(benefit => minutesSinceQuit < getBenefitMinutes(benefit)) ?? null;
 };
 
 /**
  * Calcula el tiempo restante para el siguiente beneficio
- * @param {number} daysSinceQuit - Días desde que dejó de fumar
+ * @param {number} minutesSinceQuit - Minutos desde que dejó de fumar
  * @returns {Object|null} Tiempo restante o null
  */
-export const getTimeToNextBenefit = (daysSinceQuit) => {
-  const nextBenefit = getNextBenefit(daysSinceQuit);
+export const getTimeToNextBenefit = (minutesSinceQuit) => {
+  const nextBenefit = getNextBenefit(minutesSinceQuit);
   
   if (!nextBenefit) return null;
   
-  if (nextBenefit.minutes) {
-    const minutesSinceQuit = daysSinceQuit * 24 * 60;
-    const minutesRemaining = nextBenefit.minutes - minutesSinceQuit;
-    
-    if (minutesRemaining < 60) {
-      return { value: minutesRemaining, unit: 'minutos' };
-    } else {
-      return { value: Math.round(minutesRemaining / 60), unit: 'horas' };
-    }
+  const minutesRemaining = getBenefitMinutes(nextBenefit) - minutesSinceQuit;
+  
+  if (minutesRemaining < 60) {
+    return { value: minutesRemaining, unit: minutesRemaining === 1 ? 'minuto' : 'minutos' };
   }
   
-  if (nextBenefit.days) {
-    const daysRemaining = nextBenefit.days - daysSinceQuit;
-    return { value: daysRemaining, unit: 'días' };
+  if (minutesRemaining < MINUTES_PER_DAY) {
+    const hours = Math.ceil(minutesRemaining / 60);
+    return { value: hours, unit: hours === 1 ? 'hora' : 'horas' };
   }
   
-  return null;
+  const days = Math.ceil(minutesRemaining / MINUTES_PER_DAY);
+  return { value: days, unit: days === 1 ? 'día' : 'días' };
 };

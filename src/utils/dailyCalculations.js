@@ -1,4 +1,4 @@
-import { differenceInDays } from 'date-fns';
+import { differenceInCalendarDays, differenceInDays, parseISO } from 'date-fns';
 
 /**
  * Calcula el ahorro real basado en el registro diario
@@ -39,11 +39,12 @@ export const calculateRealSavings = (userData) => {
 
   // Calcular día por día usando el registro
   const logDates = Object.keys(dailyLog).sort();
-  const firstLogDate = new Date(logDates[0]);
-  const lastLogDate = new Date(logDates[logDates.length - 1]);
+  // Las claves del registro son fechas locales yyyy-MM-dd
+  const firstLogDate = parseISO(logDates[0]);
+  const lastLogDate = parseISO(logDates[logDates.length - 1]);
 
   // Días antes del primer registro: usar cigarettesPerDayNow inicial
-  const daysBeforeLog = differenceInDays(firstLogDate, startDate);
+  const daysBeforeLog = differenceInCalendarDays(firstLogDate, startDate);
   if (daysBeforeLog > 0) {
     const reduction = cigarettesPerDayBefore - cigarettesPerDayNow;
     totalCigarettesAvoided += reduction * daysBeforeLog;
@@ -62,7 +63,7 @@ export const calculateRealSavings = (userData) => {
   });
 
   // Días después del último registro hasta hoy: usar último valor registrado
-  const daysSinceLastLog = differenceInDays(today, lastLogDate);
+  const daysSinceLastLog = differenceInCalendarDays(today, lastLogDate);
   if (daysSinceLastLog > 0) {
     const lastConsumed = dailyLog[logDates[logDates.length - 1]];
     const reduction = cigarettesPerDayBefore - lastConsumed;

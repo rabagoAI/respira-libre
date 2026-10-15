@@ -6,10 +6,10 @@ import {
   getTimeToNextBenefit 
 } from '../utils/healthBenefits';
 
-const HealthTimeline = ({ daysSinceQuit }) => {
-  const achievedBenefits = getAchievedBenefits(daysSinceQuit);
-  const nextBenefit = getNextBenefit(daysSinceQuit);
-  const timeToNext = getTimeToNextBenefit(daysSinceQuit);
+const HealthTimeline = ({ minutesSinceQuit }) => {
+  const achievedBenefits = getAchievedBenefits(minutesSinceQuit);
+  const nextBenefit = getNextBenefit(minutesSinceQuit);
+  const timeToNext = getTimeToNextBenefit(minutesSinceQuit);
 
   return (
     <motion.div

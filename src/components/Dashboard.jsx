@@ -14,45 +14,37 @@ import {
   formatCurrency
 } from '../utils/calculations';
 import { calculateRealSavings, getMovingAverage, getTrendStats } from '../utils/dailyCalculations';
-import { differenceInDays } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import HealthTimeline from './HealthTimeline';
 import SavingsGoals from './SavingsGoals';
 import SettingsModal from './SettingsModal';
 import DailyTracker from './DailyTracker';
 
-const Dashboard = ({ userData, onUpdateData, onReset }) => {
+const Dashboard = ({
+  userData,
+  onUpdateData,
+  onReset,
+  showSettings,
+  onOpenSettings,
+  onCloseSettings
+}) => {
   const [stats, setStats] = useState({
     timeSinceQuit: { days: 0, hours: 0, minutes: 0 },
     moneySaved: 0,
     cigarettesAvoided: 0,
     dailySavings: 0,
-    daysSinceQuit: 0
+    minutesSinceQuit: 0
   });
-  const [showSettings, setShowSettings] = useState(false);
-
-  // Validación de seguridad
-  if (!userData || !userData.quitDate || !userData.packPrice) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <p className="text-slate-600">Cargando datos...</p>
-      </div>
-    );
-  }
 
   // Actualizar estadísticas cada minuto
   useEffect(() => {
-    if (!userData?.quitDate) return;
-    
+    if (!userData?.quitDate || !userData?.packPrice) return;
+
     const updateStats = () => {
       const quitDate = new Date(userData.quitDate);
       const timeSinceQuit = calculateTimeSinceQuit(quitDate);
-      let daysSinceQuit = differenceInDays(new Date(), quitDate);
-      
-      // Si es el mismo día, contar como 1 día para mostrar estadísticas
-      if (daysSinceQuit === 0) {
-        daysSinceQuit = 1;
-      }
-      
+      const minutesSinceQuit = Math.max(differenceInMinutes(new Date(), quitDate), 0);
+
       // Usar cálculos reales basados en registro diario
       const realSavings = calculateRealSavings(userData);
       
@@ -68,7 +60,7 @@ const Dashboard = ({ userData, onUpdateData, onReset }) => {
         moneySaved: realSavings.totalMoneySaved,
         cigarettesAvoided: realSavings.totalCigarettesAvoided,
         dailySavings,
-        daysSinceQuit,
+        minutesSinceQuit,
         averageDaily: realSavings.averageDaily,
         daysTracked: realSavings.daysTracked
       });
@@ -79,6 +71,15 @@ const Dashboard = ({ userData, onUpdateData, onReset }) => {
 
     return () => clearInterval(interval);
   }, [userData]);
+
+  // Validación de seguridad (después de los hooks para no romper su orden)
+  if (!userData || !userData.quitDate || !userData.packPrice) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <p className="text-slate-600">Cargando datos...</p>
+      </div>
+    );
+  }
 
   const isCompletelyQuit = userData.cigarettesPerDayNow === 0;
   const movingAverage = getMovingAverage(userData.dailyLog, 7);
@@ -93,7 +94,7 @@ const Dashboard = ({ userData, onUpdateData, onReset }) => {
         className="text-center mb-12 relative"
       >
         <button
-          onClick={() => setShowSettings(true)}
+          onClick={onOpenSettings}
           className="absolute right-0 top-0 p-3 hover:bg-slate-100 rounded-xl transition-colors group"
           title="Editar configuración"
         >
@@ -265,7 +266,7 @@ const Dashboard = ({ userData, onUpdateData, onReset }) => {
       </motion.div>
 
       {/* Timeline de beneficios de salud */}
-      <HealthTimeline daysSinceQuit={stats.daysSinceQuit} />
+      <HealthTimeline minutesSinceQuit={stats.minutesSinceQuit} />
 
       {/* Objetivos de ahorro */}
       <SavingsGoals 
@@ -273,13 +274,15 @@ const Dashboard = ({ userData, onUpdateData, onReset }) => {
         dailySavings={stats.dailySavings}
       />
 
-      <SettingsModal
-  isOpen={showSettings}
-  onClose={() => setShowSettings(false)}
-  userData={userData}
-  onSave={onUpdateData}
-  onReset={onReset}  // ← Esta línea debe estar
-/>
+      {showSettings && (
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={onCloseSettings}
+          userData={userData}
+          onSave={onUpdateData}
+          onReset={onReset}
+        />
+      )}
     </div>
   );
 };

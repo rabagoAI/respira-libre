@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Cigarette, Euro, Calendar, ArrowRight } from 'lucide-react';
+import { toLocalDateString, parseLocalDate } from '../utils/dates';
 
 const OnboardingForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const OnboardingForm = ({ onSubmit }) => {
     cigarettesPerPack: '20',
     cigarettesPerDayBefore: '',
     cigarettesPerDayNow: '0',
-    quitDate: new Date().toISOString().split('T')[0]
+    quitDate: toLocalDateString()
   });
 
   const [errors, setErrors] = useState({});
@@ -68,7 +69,7 @@ const OnboardingForm = ({ onSubmit }) => {
         cigarettesPerPack: parseInt(formData.cigarettesPerPack),
         cigarettesPerDayBefore: parseInt(formData.cigarettesPerDayBefore),
         cigarettesPerDayNow: parseInt(formData.cigarettesPerDayNow),
-        quitDate: new Date(formData.quitDate).toISOString()
+        quitDate: parseLocalDate(formData.quitDate).toISOString()
       });
     }
   };
@@ -189,7 +190,7 @@ const OnboardingForm = ({ onSubmit }) => {
               name="quitDate"
               value={formData.quitDate}
               onChange={handleChange}
-              max={new Date().toISOString().split('T')[0]}
+              max={toLocalDateString()}
               className={`input-field ${errors.quitDate ? 'border-red-500' : ''}`}
             />
             {errors.quitDate && (

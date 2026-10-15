@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Cigarette, Save, TrendingDown } from 'lucide-react';
+import { toLocalDateString } from '../utils/dates';
 
 const DailyTracker = ({ userData, onUpdateDaily }) => {
   const [todayCigarettes, setTodayCigarettes] = useState(userData.cigarettesPerDayNow || 0);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSave = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateString();
     
     // Actualizar el registro diario
     onUpdateDaily({

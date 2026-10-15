@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Heart, TrendingUp, Target, Sparkles } from 'lucide-react';
 
-const Hero = ({ hasStarted, onReset }) => {
+const Hero = ({ hasStarted, onEditSettings }) => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
       {/* Decoración de fondo */}
@@ -88,7 +88,7 @@ const Hero = ({ hasStarted, onReset }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              onClick={onReset}
+              onClick={onEditSettings}
               className="text-sm text-primary-100 hover:text-white underline transition-colors flex items-center gap-2 mx-auto"
             >
               <span>Editar mi configuración</span>

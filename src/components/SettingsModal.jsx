@@ -1,39 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Cigarette, Euro, Calendar } from 'lucide-react';
+import { toLocalDateString, parseLocalDate } from '../utils/dates';
+
+// Convierte los datos guardados en valores del formulario
+const getInitialFormData = (userData) => ({
+  packPrice: userData?.packPrice || 0,
+  cigarettesPerPack: userData?.cigarettesPerPack || 20,
+  cigarettesPerDayBefore: userData?.cigarettesPerDayBefore || 0,
+  cigarettesPerDayNow: userData?.cigarettesPerDayNow || 0,
+  quitDate: toLocalDateString(userData?.quitDate ? new Date(userData.quitDate) : new Date())
+});
 
 const SettingsModal = ({ isOpen, onClose, userData, onSave, onReset }) => {
-  // Validación de seguridad
-  if (!userData) return null;
-  
-  // Validar que onReset existe
-  if (!onReset) {
-    console.error('SettingsModal: onReset function is missing');
-  }
-  
-  const [formData, setFormData] = useState({
-    packPrice: userData.packPrice || 0,
-    cigarettesPerPack: userData.cigarettesPerPack || 20,
-    cigarettesPerDayBefore: userData.cigarettesPerDayBefore || 0,
-    cigarettesPerDayNow: userData.cigarettesPerDayNow || 0,
-    quitDate: userData.quitDate ? new Date(userData.quitDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
-  });
-
-  // Actualizar formData cuando cambie userData
-  useEffect(() => {
-    if (userData) {
-      setFormData({
-        packPrice: userData.packPrice || 0,
-        cigarettesPerPack: userData.cigarettesPerPack || 20,
-        cigarettesPerDayBefore: userData.cigarettesPerDayBefore || 0,
-        cigarettesPerDayNow: userData.cigarettesPerDayNow || 0,
-        quitDate: userData.quitDate ? new Date(userData.quitDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
-      });
-    }
-  }, [userData]);
-
+  // El modal se monta al abrirse, así que el formulario parte siempre de los datos actuales
+  const [formData, setFormData] = useState(() => getInitialFormData(userData));
   const [errors, setErrors] = useState({});
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Validación de seguridad (después de los hooks para no romper su orden)
+  if (!userData || !isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +76,7 @@ const SettingsModal = ({ isOpen, onClose, userData, onSave, onReset }) => {
         cigarettesPerPack: parseInt(formData.cigarettesPerPack),
         cigarettesPerDayBefore: parseInt(formData.cigarettesPerDayBefore),
         cigarettesPerDayNow: parseInt(formData.cigarettesPerDayNow),
-        quitDate: new Date(formData.quitDate).toISOString(),
+        quitDate: parseLocalDate(formData.quitDate).toISOString(),
         updatedAt: new Date().toISOString()
       });
       onClose();
@@ -109,8 +95,6 @@ const SettingsModal = ({ isOpen, onClose, userData, onSave, onReset }) => {
       }
     }, 100);
   };
-
-  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -238,7 +222,7 @@ const SettingsModal = ({ isOpen, onClose, userData, onSave, onReset }) => {
                   name="quitDate"
                   value={formData.quitDate}
                   onChange={handleChange}
-                  max={new Date().toISOString().split('T')[0]}
+                  max={toLocalDateString()}
                   className={`input-field ${errors.quitDate ? 'border-red-500' : ''}`}
                 />
                 {errors.quitDate && (
@@ -247,7 +231,7 @@ const SettingsModal = ({ isOpen, onClose, userData, onSave, onReset }) => {
               </div>
 
               {/* Vista previa del cambio */}
-              {formData.cigarettesPerDayNow !== userData.cigarettesPerDayNow.toString() && (
+              {String(formData.cigarettesPerDayNow) !== String(userData.cigarettesPerDayNow) && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}

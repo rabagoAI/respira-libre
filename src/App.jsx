@@ -3,15 +3,17 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import Hero from './components/Hero';
 import OnboardingForm from './components/OnboardingForm';
 import Dashboard from './components/Dashboard';
+import { toLocalDateString } from './utils/dates';
 
 function App() {
   // Estado principal de la aplicación
   const [userData, setUserData] = useLocalStorage('respiraLibre_userData', null);
   const [showOnboarding, setShowOnboarding] = useState(!userData);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Maneja el envío del formulario de inicio
   const handleStartJourney = (formData) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateString();
     const journeyData = {
       ...formData,
       startDate: new Date().toISOString(),
@@ -34,19 +36,27 @@ function App() {
     localStorage.removeItem('respiraLibre_goals');
     
     // Mostrar formulario inicial
+    setShowSettings(false);
     setShowOnboarding(true);
   };
 
   return (
     <div className="min-h-screen">
       {/* Hero siempre visible */}
-      <Hero hasStarted={!!userData} onReset={handleReset} />
+      <Hero hasStarted={!!userData} onEditSettings={() => setShowSettings(true)} />
 
       {/* Mostrar formulario o dashboard según el estado */}
       {showOnboarding ? (
         <OnboardingForm onSubmit={handleStartJourney} />
       ) : (
-        <Dashboard userData={userData} onUpdateData={setUserData} onReset={handleReset} />
+        <Dashboard
+          userData={userData}
+          onUpdateData={setUserData}
+          onReset={handleReset}
+          showSettings={showSettings}
+          onOpenSettings={() => setShowSettings(true)}
+          onCloseSettings={() => setShowSettings(false)}
+        />
       )}
 
       {/* Footer */}
