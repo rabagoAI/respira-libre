@@ -4,7 +4,8 @@ import {
   getAchievedBenefits,
   getNextBenefit,
   getTimeToNextBenefit,
-  formatDuration
+  formatDuration,
+  HEALTH_SOURCES
 } from './healthBenefits';
 
 const titles = (benefits) => benefits.map(b => b.title);
@@ -16,9 +17,9 @@ describe('beneficios de salud por minutos', () => {
     expect(getTimeToNextBenefit(0)).toEqual({ value: 20, unit: 'minutos' });
   });
 
-  it('con 10 h 52 min solo están los hitos de 20 min y 2 h', () => {
+  it('con 10 h 52 min solo están los hitos de 20 min y 8 h', () => {
     const minutes = 10 * 60 + 52;
-    expect(titles(getAchievedBenefits(minutes))).toEqual(['Presión arterial normal', 'Mejora circulación']);
+    expect(titles(getAchievedBenefits(minutes))).toEqual(['Tensión y pulso normales', 'Nicotina y monóxido a la mitad']);
     expect(getNextBenefit(minutes).minutes).toBe(720);
     expect(getTimeToNextBenefit(minutes)).toEqual({ value: 2, unit: 'horas' });
   });
@@ -53,5 +54,13 @@ describe('formatDuration', () => {
     [5475 * 24 * 60, '15 años']
   ])('%i min → %s', (minutes, expected) => {
     expect(formatDuration(minutes)).toBe(expected);
+  });
+});
+
+describe('fuentes', () => {
+  it('cada hito cita una fuente conocida con URL', () => {
+    healthBenefits.forEach(b => {
+      expect(HEALTH_SOURCES[b.source]?.url).toMatch(/^https:\/\//);
+    });
   });
 });

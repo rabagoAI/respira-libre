@@ -99,6 +99,10 @@ const RecoveryAreas = ({ systems, selected, onSelect }) => {
           />
         ))}
       </div>
+      <p className="!text-[11px] !text-slate-400 mt-3 leading-relaxed">
+        Puntuación orientativa según los hitos alcanzados y cuánto has reducido el consumo en tus últimos registros.
+        No es un diagnóstico médico.
+      </p>
     </section>
   );
 };

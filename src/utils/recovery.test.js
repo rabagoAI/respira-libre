@@ -105,8 +105,8 @@ describe('getNextBenefitProgress', () => {
   it('mide el avance entre el hito anterior y el siguiente', () => {
     expect(getNextBenefitProgress(0)).toBe(0);
     expect(getNextBenefitProgress(10)).toBe(50);
-    // Entre 20 min y 2 h
-    expect(getNextBenefitProgress(70)).toBe(50);
+    // Entre 20 min y 8 h
+    expect(getNextBenefitProgress(250)).toBe(50);
   });
 
   it('devuelve null cuando no quedan hitos', () => {

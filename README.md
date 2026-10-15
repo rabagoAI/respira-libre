@@ -2,13 +2,15 @@
 
 Una aplicación web para ayudar a las personas a dejar de fumar, visualizando sus beneficios de salud y ahorros económicos.
 
+🌐 **Demo:** [respira-libre-alpha.vercel.app](https://respira-libre-alpha.vercel.app)
+
 ## ✨ Características
 
 - 📊 **Dashboard personalizado** con estadísticas en tiempo real
 - 📝 **Registro diario** del consumo, con la opción de apuntar días pasados
 - 📈 **Gráfica de evolución** de los últimos 30 días y tendencia
 - 💰 **Cálculo de ahorro económico** basado en tu consumo real
-- 🫁 **Timeline de beneficios de salud** basados en estudios médicos
+- 🫁 **Hitos de salud** con su fuente oficial (OMS, Ministerio de Sanidad…)
 - 🎯 **Objetivos de ahorro** con 20+ metas predefinidas
 - 💾 **Copia de seguridad** exportable e importable en JSON
 - 📱 **Diseño responsive** que funciona en todos los dispositivos
@@ -62,6 +64,17 @@ src/
 ├── data/         # Objetivos de ahorro predefinidos
 └── test/         # Configuración de Vitest
 ```
+
+## 🩺 Fuentes y aviso
+
+Los hitos de salud resumen la información de fuentes sanitarias oficiales; cada hito indica la suya en la app:
+
+- [Ministerio de Sanidad — Ventajas de no fumar](https://www.sanidad.gob.es/areas/promocionPrevencion/tabaco/ciudadania/dejarDeFumar/programa/todaviaFumas/ventajasDeNoFumar.htm)
+- [OMS — Beneficios de dejar de fumar](https://www.who.int/es/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation)
+- [American Cancer Society — Benefits of quitting smoking over time](https://www.cancer.org/cancer/risk-prevention/tobacco/benefits-of-quitting-smoking-over-time.html)
+- [National Cancer Institute — Nicotine withdrawal](https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/withdrawal-fact-sheet)
+
+Las puntuaciones de recuperación por sistema son estimaciones orientativas. Respira Libre es un proyecto educativo y no sustituye el consejo de un profesional sanitario.
 
 ## 📄 Licencia
 

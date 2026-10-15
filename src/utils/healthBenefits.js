@@ -1,98 +1,136 @@
 /**
- * Beneficios de salud según el tiempo sin fumar
- * Basado en estudios médicos de la OMS y CDC
+ * Fuentes oficiales de los hitos de salud (consultadas en octubre de 2026)
+ */
+export const HEALTH_SOURCES = {
+  sanidad: {
+    name: 'Ministerio de Sanidad',
+    url: 'https://www.sanidad.gob.es/areas/promocionPrevencion/tabaco/ciudadania/dejarDeFumar/programa/todaviaFumas/ventajasDeNoFumar.htm'
+  },
+  oms: {
+    name: 'Organización Mundial de la Salud',
+    url: 'https://www.who.int/es/news-room/questions-and-answers/item/tobacco-health-benefits-of-smoking-cessation'
+  },
+  acs: {
+    name: 'American Cancer Society',
+    url: 'https://www.cancer.org/cancer/risk-prevention/tobacco/benefits-of-quitting-smoking-over-time.html'
+  },
+  nci: {
+    name: 'National Cancer Institute',
+    url: 'https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/withdrawal-fact-sheet'
+  }
+};
+
+/**
+ * Beneficios de salud según el tiempo sin fumar.
+ * Cada texto resume lo que indica su fuente (`source`, ver HEALTH_SOURCES);
+ * cuando la fuente da un intervalo, el hito se sitúa dentro de él.
  * `system` indica el sistema corporal al que afecta (ver utils/recovery.js)
  */
 export const healthBenefits = [
   {
     minutes: 20,
-    title: "Presión arterial normal",
-    description: "Tu ritmo cardíaco y presión arterial vuelven a la normalidad",
-    system: 'cardio'
+    title: 'Tensión y pulso normales',
+    description: 'La tensión arterial y el ritmo del pulso recuperan sus valores normales',
+    system: 'cardio',
+    source: 'sanidad'
   },
   {
-    minutes: 120, // 2 horas
-    title: "Mejora circulación",
-    description: "La circulación comienza a mejorar, especialmente en manos y pies",
-    system: 'circulation'
+    minutes: 480, // 8 horas
+    title: 'Nicotina y monóxido a la mitad',
+    description: 'Los niveles de nicotina y de monóxido de carbono en sangre se reducen a la mitad',
+    system: 'circulation',
+    source: 'sanidad'
   },
   {
     minutes: 720, // 12 horas
-    title: "Nivel de CO normalizado",
-    description: "El nivel de monóxido de carbono en tu sangre vuelve a la normalidad",
-    system: 'respiratory'
+    title: 'Monóxido de carbono normal',
+    description: 'El nivel de monóxido de carbono en sangre baja hasta valores normales',
+    system: 'respiratory',
+    source: 'oms'
   },
   {
     days: 1,
-    title: "Riesgo cardíaco reducido",
-    description: "El riesgo de ataque cardíaco comienza a disminuir",
-    system: 'cardio'
+    title: 'Menor riesgo de infarto',
+    description: 'Empieza a disminuir el riesgo de sufrir un ataque al corazón',
+    system: 'cardio',
+    source: 'sanidad'
   },
   {
     days: 2,
-    title: "Sentidos recuperados",
-    description: "Las terminaciones nerviosas comienzan a regenerarse. Mejora el olfato y gusto",
-    system: 'wellbeing'
+    title: 'Mejoran el gusto y el olfato',
+    description: 'A las 48 horas sin fumar empiezas a notar mejor los sabores y los olores',
+    system: 'wellbeing',
+    source: 'sanidad'
   },
   {
     days: 3,
-    title: "Respiración más fácil",
-    description: "Los bronquios comienzan a relajarse, respirar es más fácil",
-    system: 'respiratory'
+    title: 'Respiras mejor',
+    description: 'A las 72 horas sin fumar mejora la respiración',
+    system: 'respiratory',
+    source: 'sanidad'
   },
   {
     days: 7,
-    title: "Primera semana completada",
-    description: "¡Has superado lo más difícil! La dependencia física disminuye notablemente",
-    system: 'wellbeing'
+    title: 'Primera semana superada',
+    description: 'Los síntomas de abstinencia suelen ser más intensos la primera semana; a partir de ahora tienden a disminuir',
+    system: 'wellbeing',
+    source: 'nci'
   },
   {
     days: 14,
-    title: "Circulación mejorada",
-    description: "La circulación sanguínea mejora significativamente",
-    system: 'circulation'
+    title: 'Mejora la circulación',
+    description: 'Entre las 2 semanas y los 3 meses mejora la circulación sanguínea y caminar resulta más fácil',
+    system: 'circulation',
+    source: 'sanidad'
   },
   {
     days: 30,
-    title: "Función pulmonar mejorada",
-    description: "La función pulmonar aumenta hasta un 30%. Menos tos y falta de aire",
-    system: 'respiratory'
+    title: 'Aumenta la función pulmonar',
+    description: 'Entre las 2 y las 12 semanas sin fumar aumenta la función pulmonar',
+    system: 'respiratory',
+    source: 'oms'
   },
   {
     days: 90,
-    title: "Regeneración pulmonar",
-    description: "Los cilios pulmonares se regeneran, mejorando la limpieza de los pulmones",
-    system: 'respiratory'
+    title: 'Menos tos y falta de aire',
+    description: 'Entre 1 y 9 meses sin fumar disminuyen la tos y la dificultad para respirar',
+    system: 'respiratory',
+    source: 'oms'
   },
   {
     days: 180,
-    title: "Energía renovada",
-    description: "Notas un aumento significativo de energía y capacidad física",
-    system: 'wellbeing'
+    title: 'Más energía y bienestar',
+    description: 'Entre 1 y 9 meses sin fumar disminuye la fatiga y aumenta la sensación de bienestar',
+    system: 'wellbeing',
+    source: 'sanidad'
   },
   {
     days: 365,
-    title: "¡Un año sin fumar!",
-    description: "El riesgo de enfermedad cardíaca coronaria es la mitad del de un fumador",
-    system: 'cardio'
+    title: '¡Un año sin fumar!',
+    description: 'El riesgo de cardiopatía coronaria es la mitad que el de una persona que fuma',
+    system: 'cardio',
+    source: 'oms'
   },
   {
     days: 1825, // 5 años
-    title: "Riesgo de cáncer reducido",
-    description: "El riesgo de cáncer de boca, garganta y esófago es la mitad",
-    system: 'wellbeing'
+    title: 'Menos riesgo de cáncer oral',
+    description: 'Entre los 5 y los 10 años, el riesgo de cáncer de boca, garganta y laringe se reduce a la mitad',
+    system: 'wellbeing',
+    source: 'acs'
   },
   {
     days: 3650, // 10 años
-    title: "Riesgo de cáncer pulmonar",
-    description: "El riesgo de morir de cáncer de pulmón es la mitad del de un fumador",
-    system: 'respiratory'
+    title: 'Riesgo de cáncer de pulmón a la mitad',
+    description: 'El riesgo de cáncer de pulmón baja hasta la mitad del de una persona que fuma',
+    system: 'respiratory',
+    source: 'oms'
   },
   {
     days: 5475, // 15 años
-    title: "Riesgo cardíaco normalizado",
-    description: "El riesgo de enfermedad cardíaca es igual al de alguien que nunca fumó",
-    system: 'cardio'
+    title: 'Corazón de no fumador',
+    description: 'El riesgo de cardiopatía coronaria es igual al de una persona que no fuma',
+    system: 'cardio',
+    source: 'oms'
   }
 ];
 

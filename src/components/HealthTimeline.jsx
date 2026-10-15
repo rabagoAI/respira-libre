@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { healthBenefits, getBenefitMinutes, formatDuration } from '../utils/healthBenefits';
+import { ExternalLink, Info } from 'lucide-react';
+import { healthBenefits, getBenefitMinutes, formatDuration, HEALTH_SOURCES } from '../utils/healthBenefits';
 import { BODY_SYSTEMS } from '../utils/recovery';
 import { SYSTEM_ICONS } from '../utils/icons';
 import RangeBar from './ui/RangeBar';
@@ -109,6 +110,16 @@ const HealthTimeline = ({ minutesSinceQuit }) => {
                       {benefit.title}
                     </p>
                     <p className="!text-sm !text-slate-500 leading-snug mt-0.5">{benefit.description}</p>
+                    <a
+                      href={HEALTH_SOURCES[benefit.source].url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 mt-1 text-xs text-slate-400 hover:text-primary-700 underline-offset-2 hover:underline"
+                    >
+                      Fuente: {HEALTH_SOURCES[benefit.source].name}
+                      <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                    </a>
                   </div>
                 </div>
 
@@ -143,6 +154,16 @@ const HealthTimeline = ({ minutesSinceQuit }) => {
             {filter === 'done' ? 'Tu primer hito llega a los 20 minutos. ¡Ya casi está!' : '¡Has conseguido todos los hitos!'}
           </p>
         )}
+
+        {/* Aviso médico */}
+        <div className="flex gap-3 px-4 md:px-6 py-4 bg-slate-50/70 border-t border-slate-200/70">
+          <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="!text-xs !text-slate-500 leading-relaxed">
+            Los plazos son orientativos y proceden de fuentes sanitarias oficiales; cada persona se recupera a su ritmo.
+            Esta información no sustituye el consejo de un profesional sanitario. Si tienes dudas sobre tu salud
+            o sobre cómo dejar de fumar, consulta con tu médico o farmacéutico.
+          </p>
+        </div>
       </div>
     </motion.section>
   );
