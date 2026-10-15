@@ -31,49 +31,12 @@ const Dashboard = ({
   onOpenSettings,
   onCloseSettings
 }) => {
-  const [stats, setStats] = useState({
-    timeSinceQuit: { days: 0, hours: 0, minutes: 0 },
-    moneySaved: 0,
-    cigarettesAvoided: 0,
-    dailySavings: 0,
-    minutesSinceQuit: 0
-  });
-
-  // Actualizar estadísticas cada minuto
+  // Volver a renderizar cada minuto para refrescar contadores y totales
+  const [, setTick] = useState(0);
   useEffect(() => {
-    if (!userData?.quitDate || !userData?.packPrice) return;
-
-    const updateStats = () => {
-      const quitDate = new Date(userData.quitDate);
-      const timeSinceQuit = calculateTimeSinceQuit(quitDate);
-      const minutesSinceQuit = Math.max(differenceInMinutes(new Date(), quitDate), 0);
-
-      // Usar cálculos reales basados en registro diario
-      const realSavings = calculateRealSavings(userData);
-      
-      const dailySavings = calculateDailySavings(
-        userData.packPrice,
-        userData.cigarettesPerPack,
-        userData.cigarettesPerDayBefore,
-        realSavings.averageDaily
-      );
-
-      setStats({
-        timeSinceQuit,
-        moneySaved: realSavings.totalMoneySaved,
-        cigarettesAvoided: realSavings.totalCigarettesAvoided,
-        dailySavings,
-        minutesSinceQuit,
-        averageDaily: realSavings.averageDaily,
-        daysTracked: realSavings.daysTracked
-      });
-    };
-
-    updateStats();
-    const interval = setInterval(updateStats, 60000); // Actualizar cada minuto
-
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
     return () => clearInterval(interval);
-  }, [userData]);
+  }, []);
 
   // Validación de seguridad (después de los hooks para no romper su orden)
   if (!userData || !userData.quitDate || !userData.packPrice) {
@@ -83,6 +46,25 @@ const Dashboard = ({
       </div>
     );
   }
+
+  // Estadísticas derivadas de los datos: se calculan en cada render (son baratas)
+  // en lugar de guardarlas en estado, así no se ven ceros al cargar
+  const quitDate = new Date(userData.quitDate);
+  const realSavings = calculateRealSavings(userData);
+  const stats = {
+    timeSinceQuit: calculateTimeSinceQuit(quitDate),
+    minutesSinceQuit: Math.max(differenceInMinutes(new Date(), quitDate), 0),
+    moneySaved: realSavings.totalMoneySaved,
+    cigarettesAvoided: realSavings.totalCigarettesAvoided,
+    averageDaily: realSavings.averageDaily,
+    daysTracked: realSavings.daysTracked,
+    dailySavings: calculateDailySavings(
+      userData.packPrice,
+      userData.cigarettesPerPack,
+      userData.cigarettesPerDayBefore,
+      realSavings.averageDaily
+    )
+  };
 
   // Consumo actual = último día registrado (o el valor inicial si no hay registro)
   const currentConsumption = getCurrentConsumption(userData);
@@ -101,6 +83,7 @@ const Dashboard = ({
           onClick={onOpenSettings}
           className="absolute right-0 top-0 p-3 hover:bg-slate-100 rounded-xl transition-colors group"
           title="Editar configuración"
+          aria-label="Editar configuración"
         >
           <Settings className="w-6 h-6 text-slate-400 group-hover:text-primary-600 group-hover:rotate-90 transition-all duration-300" />
         </button>

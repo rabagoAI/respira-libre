@@ -98,7 +98,7 @@ function App() {
           </div>
           
           <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 Respira Libre. Proyecto educativo para ayudar a dejar de fumar.</p>
+            <p>&copy; {new Date().getFullYear()} Respira Libre. Proyecto educativo para ayudar a dejar de fumar.</p>
           </div>
         </div>
       </footer>

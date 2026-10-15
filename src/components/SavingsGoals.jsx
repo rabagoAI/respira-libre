@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Calendar } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useDialog } from '../hooks/useDialog';
 import { predefinedGoals, getCategories } from '../data/predefinedGoals';
 import { calculateGoalProgress, formatCurrency } from '../utils/calculations';
 
 const SavingsGoals = ({ moneySaved, dailySavings }) => {
   const [goals, setGoals] = useLocalStorage('respiraLibre_goals', []);
   const [showAddModal, setShowAddModal] = useState(false);
+  const idPrefix = useId();
+  const addDialogRef = useDialog(() => setShowAddModal(false), showAddModal);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [customGoal, setCustomGoal] = useState({ name: '', price: '' });
 
@@ -61,9 +64,10 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
+          aria-label="Añadir objetivo"
           className="btn-primary flex items-center gap-2"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-5 h-5" aria-hidden="true" />
           <span className="hidden sm:inline">Añadir objetivo</span>
         </button>
       </div>
@@ -92,9 +96,10 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
                 {/* Botón eliminar */}
                 <button
                   onClick={() => removeGoal(goal.id)}
+                  aria-label={`Eliminar objetivo ${goal.name}`}
                   className="absolute top-4 right-4 p-2 hover:bg-red-100 rounded-lg transition-colors group"
                 >
-                  <Trash2 className="w-4 h-4 text-slate-400 group-hover:text-red-600" />
+                  <Trash2 className="w-4 h-4 text-slate-400 group-hover:text-red-600" aria-hidden="true" />
                 </button>
 
                 {/* Icono y título */}
@@ -201,12 +206,17 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
+              ref={addDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`${idPrefix}-title`}
+              tabIndex={-1}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
             >
               {/* Header del modal */}
               <div className="p-6 border-b border-slate-200">
-                <h3 className="text-2xl font-bold text-slate-900">
+                <h3 id={`${idPrefix}-title`} className="text-2xl font-bold text-slate-900">
                   Añadir objetivo de ahorro
                 </h3>
                 <p className="text-slate-600 mt-1">
@@ -215,7 +225,7 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
               </div>
 
               {/* Contenido del modal */}
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              <div className="p-6 overflow-y-auto flex-1 min-h-0">
                 {/* Objetivo personalizado */}
                 <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
                   <h4 className="font-bold text-lg text-slate-900 mb-4">
@@ -223,10 +233,11 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label htmlFor={`${idPrefix}-name`} className="block text-sm font-semibold text-slate-700 mb-2">
                         Nombre del objetivo
                       </label>
                       <input
+                        id={`${idPrefix}-name`}
                         type="text"
                         value={customGoal.name}
                         onChange={(e) => setCustomGoal({ ...customGoal, name: e.target.value })}
@@ -235,10 +246,11 @@ const SavingsGoals = ({ moneySaved, dailySavings }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label htmlFor={`${idPrefix}-price`} className="block text-sm font-semibold text-slate-700 mb-2">
                         Precio (€)
                       </label>
                       <input
+                        id={`${idPrefix}-price`}
                         type="number"
                         value={customGoal.price}
                         onChange={(e) => setCustomGoal({ ...customGoal, price: e.target.value })}
