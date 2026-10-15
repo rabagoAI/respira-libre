@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     // Zona horaria fija para que los tests de fechas no dependan del equipo
-    setupFiles: ['./src/test/setup.js'],
+    // setup-dom.js solo actúa en los tests de componentes (entorno jsdom)
+    setupFiles: ['./src/test/setup.js', './src/test/setup-dom.js'],
   },
 })

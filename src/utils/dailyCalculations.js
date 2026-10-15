@@ -26,6 +26,19 @@ export const getDailySeries = (userData) => {
 };
 
 /**
+ * Consumo medio de los últimos N días del calendario (huecos rellenados como en
+ * getDailySeries), para que un único día malo no pese como si fuera toda la semana
+ * @param {Object} userData - Datos del usuario con dailyLog
+ * @param {number} days - Número de días
+ * @returns {number} Media redondeada a un decimal
+ */
+export const getRecentAverage = (userData, days = 7) => {
+  const recent = getDailySeries(userData).slice(-days);
+  const total = recent.reduce((sum, day) => sum + day.value, 0);
+  return Math.round((total / recent.length) * 10) / 10;
+};
+
+/**
  * Calcula el ahorro real basado en el registro diario (ver getDailySeries)
  * @param {Object} userData - Datos del usuario con dailyLog
  * @returns {Object} Dinero ahorrado y cigarrillos evitados
@@ -45,33 +58,6 @@ export const calculateRealSavings = (userData) => {
     averageDaily: Math.round(averageDaily * 10) / 10,
     daysTracked: loggedDays.length
   };
-};
-
-/**
- * Obtiene el consumo más reciente registrado
- * @param {Object} userData - Datos del usuario con dailyLog
- * @returns {number} Último valor del registro o cigarettesPerDayNow si no hay
- */
-export const getCurrentConsumption = (userData) => {
-  const dates = Object.keys(userData.dailyLog || {}).sort();
-  return dates.length > 0
-    ? userData.dailyLog[dates[dates.length - 1]]
-    : userData.cigarettesPerDayNow;
-};
-
-/**
- * Obtiene el promedio móvil de los últimos N días
- * @param {Object} dailyLog - Registro diario
- * @param {number} days - Número de días para el promedio
- * @returns {number} Promedio móvil
- */
-export const getMovingAverage = (dailyLog, days = 7) => {
-  if (!dailyLog || Object.keys(dailyLog).length === 0) return 0;
-
-  const dates = Object.keys(dailyLog).sort().slice(-days);
-  const total = dates.reduce((sum, date) => sum + dailyLog[date], 0);
-  
-  return dates.length > 0 ? Math.round((total / dates.length) * 10) / 10 : 0;
 };
 
 /**

@@ -3,11 +3,23 @@ import { motion } from 'framer-motion';
 import { X, Save, Download, Upload } from 'lucide-react';
 import { toLocalDateString } from '../utils/dates';
 import { buildBackup, getBackupFileName, parseBackup } from '../utils/backup';
+import { reloadPage } from '../utils/reload';
 import { useUserDataForm } from '../hooks/useUserDataForm';
 import { useDialog } from '../hooks/useDialog';
 import UserDataFields from './UserDataFields';
 import ReminderSettings from './ReminderSettings';
 import ThemeSelector from './ThemeSelector';
+
+// Lee un archivo como texto (FileReader como respaldo de File.text, que no existe en todos los entornos)
+const readFileAsText = (file) => {
+  if (typeof file.text === 'function') return file.text();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    reader.readAsText(file);
+  });
+};
 
 const USER_DATA_KEY = 'respiraLibre_userData';
 const GOALS_KEY = 'respiraLibre_goals';
@@ -73,7 +85,7 @@ const SettingsModal = ({ onClose, userData, onSave, onReset, theme }) => {
     if (!file) return;
 
     try {
-      setPendingImport(parseBackup(await file.text()));
+      setPendingImport(parseBackup(await readFileAsText(file)));
       setImportError('');
     } catch (error) {
       setPendingImport(null);
@@ -90,7 +102,7 @@ const SettingsModal = ({ onClose, userData, onSave, onReset, theme }) => {
       return;
     }
     // Recargar para que todos los componentes lean los datos importados
-    window.location.reload();
+    reloadPage();
   };
 
   const handleReset = () => {

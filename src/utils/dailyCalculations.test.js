@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   calculateRealSavings,
-  getCurrentConsumption,
-  getMovingAverage,
   getTrendStats,
-  getChartData
+  getChartData,
+  getRecentAverage
 } from './dailyCalculations';
 
 // Hoy: 15 de octubre de 2026 a mediodía. Inicio: 6 de octubre → 10 días contando hoy
@@ -72,29 +71,6 @@ describe('calculateRealSavings', () => {
   });
 });
 
-describe('getCurrentConsumption', () => {
-  it('devuelve el registro más reciente', () => {
-    expect(getCurrentConsumption({ ...baseUser, dailyLog: { '2026-10-14': 3, '2026-10-10': 8 } })).toBe(3);
-  });
-
-  it('usa cigarettesPerDayNow si no hay registro', () => {
-    expect(getCurrentConsumption({ ...baseUser, dailyLog: {} })).toBe(10);
-    expect(getCurrentConsumption(baseUser)).toBe(10);
-  });
-});
-
-describe('getMovingAverage', () => {
-  it('promedia los últimos N registros', () => {
-    const log = { '2026-10-01': 100, '2026-10-02': 2, '2026-10-03': 4 };
-    expect(getMovingAverage(log, 2)).toBe(3);
-  });
-
-  it('devuelve 0 sin registro', () => {
-    expect(getMovingAverage({})).toBe(0);
-    expect(getMovingAverage(undefined)).toBe(0);
-  });
-});
-
 describe('getTrendStats', () => {
   it('es neutral con menos de dos registros', () => {
     expect(getTrendStats({ '2026-10-01': 5 }).trend).toBe('neutral');
@@ -127,5 +103,17 @@ describe('getChartData', () => {
     expect(data).toHaveLength(7);
     expect(data[0].date).toBe('2026-10-09');
     expect(data[6]).toEqual({ date: '2026-10-15', value: 0 });
+  });
+});
+
+describe('getRecentAverage', () => {
+  it('promedia los últimos 7 días rellenando los huecos', () => {
+    // 6-14 oct sin registro → 10/día; 15 oct: 24 → (6 × 10 + 24) / 7
+    expect(getRecentAverage({ ...baseUser, dailyLog: { '2026-10-15': 24 } })).toBe(12);
+  });
+
+  it('usa menos días si se empezó hace menos de una semana', () => {
+    const user = { ...baseUser, quitDate: new Date(2026, 9, 14).toISOString(), dailyLog: { '2026-10-15': 0 } };
+    expect(getRecentAverage(user)).toBe(5);
   });
 });

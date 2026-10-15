@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { differenceInMinutes } from 'date-fns';
 import { Wind, BellRing, X } from 'lucide-react';
 import { calculateTimeSinceQuit, calculateDailySavings } from '../utils/calculations';
-import { calculateRealSavings, getCurrentConsumption, getMovingAverage, getDailySeries } from '../utils/dailyCalculations';
+import { calculateRealSavings, getRecentAverage, getDailySeries } from '../utils/dailyCalculations';
 import { getStreaks } from '../utils/streaks';
 import { buildAchievementContext, getAchievements, getNewAchievements } from '../utils/achievements';
 import { getAchievedBenefits, getNextBenefit, getTimeToNextBenefit, healthBenefits } from '../utils/healthBenefits';
@@ -106,6 +106,8 @@ const Dashboard = ({
   const quitDate = new Date(userData.quitDate);
   const realSavings = calculateRealSavings(userData);
   const minutesSinceQuit = Math.max(differenceInMinutes(new Date(), quitDate), 0);
+  // Consumo reciente: media de los últimos 7 días (un solo día malo no lo arrastra todo)
+  const recentConsumption = getRecentAverage(userData, 7);
   const stats = {
     timeSinceQuit: calculateTimeSinceQuit(quitDate),
     minutesSinceQuit,
@@ -115,14 +117,10 @@ const Dashboard = ({
       userData.packPrice,
       userData.cigarettesPerPack,
       userData.cigarettesPerDayBefore,
-      realSavings.averageDaily
+      recentConsumption
     )
   };
 
-  // Consumo reciente: media de los últimos 7 registros (o el último valor conocido)
-  const recentConsumption = realSavings.daysTracked > 0
-    ? getMovingAverage(userData.dailyLog, 7)
-    : getCurrentConsumption(userData);
   const reductionFactor = getReductionFactor(userData.cigarettesPerDayBefore, recentConsumption);
   const systems = getRecoverySystems(minutesSinceQuit, reductionFactor);
 
@@ -203,7 +201,12 @@ const Dashboard = ({
             onShowReport={() => scrollToSection('evolucion')}
           />
           <RecoveryAreas systems={systems} selected={selectedSystem} onSelect={setSelectedSystem} />
-          <CarePlan userData={userData} onUpdateData={onUpdateData} minutesSinceQuit={minutesSinceQuit} />
+          <CarePlan
+            userData={userData}
+            onUpdateData={onUpdateData}
+            minutesSinceQuit={minutesSinceQuit}
+            onOpenBreathing={() => setShowBreathing(true)}
+          />
           <GoalsBanner
             moneySaved={stats.moneySaved}
             dailySavings={stats.dailySavings}

@@ -62,7 +62,7 @@ const UpcomingMilestones = ({ minutesSinceQuit }) => {
 /**
  * Plan personalizado con pestañas: registro diario, consejos y próximos hitos
  */
-const CarePlan = ({ userData, onUpdateData, minutesSinceQuit }) => {
+const CarePlan = ({ userData, onUpdateData, minutesSinceQuit, onOpenBreathing }) => {
   const [activeTab, setActiveTab] = useState('today');
 
   return (
@@ -110,7 +110,7 @@ const CarePlan = ({ userData, onUpdateData, minutesSinceQuit }) => {
         >
           {activeTab === 'today' && (
             <div className="rounded-2xl bg-white/80 border border-white p-4 shadow-sm">
-              <DailyTracker userData={userData} onUpdateDaily={onUpdateData} embedded />
+              <DailyTracker userData={userData} onUpdateDaily={onUpdateData} onOpenBreathing={onOpenBreathing} embedded />
             </div>
           )}
 

@@ -25,7 +25,9 @@ const GoalsBanner = ({ moneySaved, dailySavings, onShowGoals }) => {
       <div className="relative flex-1">
         <p className="font-semibold">Convierte tu ahorro en recompensas</p>
         <p className="text-sm text-primary-100 mt-0.5">
-          Llevas {formatCurrency(moneySaved)} y sumas {formatCurrency(dailySavings)} cada día. Ponle un objetivo.
+          {dailySavings > 0
+            ? <>Llevas {formatCurrency(moneySaved)} y sumas {formatCurrency(dailySavings)} cada día. Ponle un objetivo.</>
+            : <>Llevas {formatCurrency(moneySaved)} ahorrados. Ponle un objetivo para motivarte.</>}
         </p>
       </div>
       <button

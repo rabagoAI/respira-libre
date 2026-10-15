@@ -28,7 +28,7 @@ Una aplicación web para ayudar a las personas a dejar de fumar, visualizando su
 - **Recharts** - Gráficas
 - **date-fns** - Manejo de fechas
 - **Lucide React** - Iconos
-- **Vitest** - Tests
+- **Vitest** y **Testing Library** - Tests
 
 ## 🚀 Instalación
 
@@ -51,7 +51,7 @@ npm run dev
 | Comando | Descripción |
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo |
-| `npm test` | Ejecuta los tests una vez |
+| `npm test` | Ejecuta los tests una vez (lógica en Node y componentes con Testing Library en jsdom) |
 | `npm run test:watch` | Tests en modo observación |
 | `npm run lint` | Revisa el código con ESLint |
 | `npm run build` | Build para producción en `dist/` |
@@ -61,7 +61,7 @@ npm run dev
 
 ```
 src/
-├── components/   # Componentes de la interfaz
+├── components/   # Componentes de la interfaz (tests en components/__tests__)
 ├── hooks/        # Hooks reutilizables (localStorage, formularios, diálogos)
 ├── utils/        # Cálculos, fechas, validación y copias (con sus tests)
 ├── data/         # Objetivos de ahorro predefinidos
