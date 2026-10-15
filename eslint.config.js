@@ -40,4 +40,9 @@ export default [
       }],
     },
   },
+  {
+    // Configuración y setup de tests se ejecutan en Node
+    files: ['vite.config.js', 'src/test/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
 ]

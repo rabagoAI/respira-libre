@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Plus, Trash2, TrendingUp, Calendar } from 'lucide-react';
+import { Plus, Trash2, Calendar } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { predefinedGoals, getCategories } from '../data/predefinedGoals';
 import { calculateGoalProgress, formatCurrency } from '../utils/calculations';

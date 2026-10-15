@@ -113,3 +113,22 @@ export const getTrendStats = (dailyLog) => {
     percentage: Math.abs(Math.round(change))
   };
 };
+/**
+ * Prepara los datos de la gráfica de consumo de los últimos N días
+ * (sin pasar de la fecha de inicio). Los días sin registro quedan a null
+ * @param {Object} dailyLog - Registro diario
+ * @param {string} quitDate - Fecha de inicio (ISO)
+ * @param {number} days - Número máximo de días a mostrar
+ * @returns {Array} [{ date, value }] ordenado de más antiguo a hoy
+ */
+export const getChartData = (dailyLog = {}, quitDate, days = 30) => {
+  const today = startOfDay(new Date());
+  const startDate = startOfDay(new Date(quitDate));
+  const daysSinceStart = differenceInCalendarDays(today, startDate) + 1;
+  const total = Math.max(Math.min(days, daysSinceStart), 1);
+
+  return Array.from({ length: total }, (_, i) => {
+    const date = toLocalDateString(addDays(today, i - total + 1));
+    return { date, value: dailyLog[date] ?? null };
+  });
+};

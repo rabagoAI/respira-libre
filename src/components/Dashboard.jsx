@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -13,12 +13,15 @@ import {
   calculateDailySavings,
   formatCurrency
 } from '../utils/calculations';
-import { calculateRealSavings, getCurrentConsumption, getMovingAverage, getTrendStats } from '../utils/dailyCalculations';
+import { calculateRealSavings, getCurrentConsumption, getMovingAverage } from '../utils/dailyCalculations';
 import { differenceInMinutes } from 'date-fns';
 import HealthTimeline from './HealthTimeline';
 import SavingsGoals from './SavingsGoals';
 import SettingsModal from './SettingsModal';
 import DailyTracker from './DailyTracker';
+
+// La gráfica (recharts) va en un chunk aparte para no engordar la carga inicial
+const ConsumptionChart = lazy(() => import('./ConsumptionChart'));
 
 const Dashboard = ({
   userData,
@@ -85,7 +88,6 @@ const Dashboard = ({
   const currentConsumption = getCurrentConsumption(userData);
   const isCompletelyQuit = currentConsumption === 0;
   const movingAverage = getMovingAverage(userData.dailyLog, 7);
-  const trendStats = getTrendStats(userData.dailyLog);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -266,6 +268,11 @@ const Dashboard = ({
           </p>
         </div>
       </motion.div>
+
+      {/* Evolución del consumo diario */}
+      <Suspense fallback={<div className="card mb-12 h-80 animate-pulse" aria-hidden="true" />}>
+        <ConsumptionChart userData={userData} />
+      </Suspense>
 
       {/* Timeline de beneficios de salud */}
       <HealthTimeline minutesSinceQuit={stats.minutesSinceQuit} />

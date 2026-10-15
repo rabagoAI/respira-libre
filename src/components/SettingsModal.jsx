@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { X, Save, Cigarette, Euro, Calendar } from 'lucide-react';
+import { X, Save, Cigarette, Euro, Calendar, Download, Upload } from 'lucide-react';
 import { toLocalDateString, parseLocalDate } from '../utils/dates';
 import { validateUserData } from '../utils/validation';
+import { buildBackup, getBackupFileName, parseBackup } from '../utils/backup';
+
+const USER_DATA_KEY = 'respiraLibre_userData';
+const GOALS_KEY = 'respiraLibre_goals';
 
 // Convierte los datos guardados en valores del formulario
 const getInitialFormData = (userData) => ({
@@ -18,6 +22,9 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
   const [formData, setFormData] = useState(() => getInitialFormData(userData));
   const [errors, setErrors] = useState({});
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [pendingImport, setPendingImport] = useState(null);
+  const [importError, setImportError] = useState('');
+  const fileInputRef = useRef(null);
 
   // Validación de seguridad (después de los hooks para no romper su orden)
   if (!userData) return null;
@@ -59,6 +66,51 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
     }
   };
 
+  // Descarga un JSON con la configuración, el registro diario y los objetivos
+  const handleExport = () => {
+    let goals = [];
+    try {
+      goals = JSON.parse(localStorage.getItem(GOALS_KEY)) ?? [];
+    } catch {
+      goals = [];
+    }
+
+    const blob = new Blob([JSON.stringify(buildBackup(userData, goals), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = getBackupFileName();
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Lee y valida el archivo; los datos no se aplican hasta confirmar
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    try {
+      setPendingImport(parseBackup(await file.text()));
+      setImportError('');
+    } catch (error) {
+      setPendingImport(null);
+      setImportError(error.message);
+    }
+  };
+
+  const confirmImport = () => {
+    try {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(pendingImport.userData));
+      localStorage.setItem(GOALS_KEY, JSON.stringify(pendingImport.goals));
+    } catch {
+      setImportError('No se pudieron guardar los datos en el navegador');
+      return;
+    }
+    // Recargar para que todos los componentes lean los datos importados
+    window.location.reload();
+  };
+
   const handleReset = () => {
     setShowResetConfirm(false);
     onClose();
@@ -85,7 +137,7 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
       >
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex items-center justify-between">
@@ -101,7 +153,7 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
         </div>
 
         {/* Contenido */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 min-h-0">
           <div className="space-y-6">
             {/* Precio del paquete */}
             <div>
@@ -233,11 +285,88 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
               </motion.div>
             )}
           </div>
+
+          {/* Acciones secundarias (en la zona con scroll para que el pie quepa en pantallas bajas) */}
+          <div className="mt-8 pt-6 border-t border-slate-200 space-y-4">
+            {/* Copia de seguridad */}
+            <div className="p-4 bg-white rounded-xl border border-slate-200">
+              <p className="text-sm font-semibold text-slate-700 mb-1">Copia de seguridad</p>
+              <p className="text-xs text-slate-500 mb-3">
+                Tus datos solo están en este navegador. Descarga una copia para no perderlos o para pasarlos a otro dispositivo.
+              </p>
+
+              {pendingImport ? (
+                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-900 mb-3">
+                    La copia tiene {Object.keys(pendingImport.userData.dailyLog).length} días registrados
+                    y {pendingImport.goals.length} {pendingImport.goals.length === 1 ? 'objetivo' : 'objetivos'}.
+                    {' '}<strong>Reemplazará todos tus datos actuales.</strong>
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPendingImport(null)}
+                      className="flex-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={confirmImport}
+                      className="flex-1 px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold rounded-lg transition-colors"
+                    >
+                      Sí, importar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    className="btn-secondary flex-1 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    Exportar datos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="btn-secondary flex-1 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Importar datos
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/json,.json"
+                    onChange={handleImportFile}
+                    className="hidden"
+                    aria-label="Archivo de copia de seguridad"
+                  />
+                </div>
+              )}
+
+              {importError && (
+                <p className="text-red-500 text-sm mt-2">{importError}</p>
+              )}
+            </div>
+
+            {/* Botón de reiniciar */}
+            <button
+              type="button"
+              onClick={() => setShowResetConfirm(true)}
+              className="w-full px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-semibold rounded-xl transition-all duration-200 border-2 border-red-200"
+            >
+              🔄 Reiniciar mi camino desde cero
+            </button>
+          </div>
         </form>
 
         {/* Footer */}
         <div className="p-6 border-t border-slate-200 bg-slate-50">
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
@@ -253,15 +382,6 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
               Guardar cambios
             </button>
           </div>
-          
-          {/* Botón de reiniciar */}
-          <button
-            type="button"
-            onClick={() => setShowResetConfirm(true)}
-            className="w-full px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-semibold rounded-xl transition-all duration-200 border-2 border-red-200"
-          >
-            🔄 Reiniciar mi camino desde cero
-          </button>
         </div>
       </motion.div>
 
