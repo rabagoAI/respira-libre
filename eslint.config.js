@@ -45,4 +45,9 @@ export default [
     files: ['vite.config.js', 'src/test/**/*.js'],
     languageOptions: { globals: globals.node },
   },
+  {
+    // El service worker se ejecuta en su propio contexto
+    files: ['public/sw.js'],
+    languageOptions: { globals: globals.serviceworker },
+  },
 ]

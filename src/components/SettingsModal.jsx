@@ -6,6 +6,7 @@ import { buildBackup, getBackupFileName, parseBackup } from '../utils/backup';
 import { useUserDataForm } from '../hooks/useUserDataForm';
 import { useDialog } from '../hooks/useDialog';
 import UserDataFields from './UserDataFields';
+import ReminderSettings from './ReminderSettings';
 
 const USER_DATA_KEY = 'respiraLibre_userData';
 const GOALS_KEY = 'respiraLibre_goals';
@@ -37,11 +38,12 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
     const data = getValidatedData();
     if (!data) return;
 
-    onSave({
-      ...userData,
+    // Actualización funcional: conserva lo cambiado mientras el modal estaba abierto (p. ej. el recordatorio)
+    onSave(prev => ({
+      ...prev,
       ...data,
       updatedAt: new Date().toISOString()
-    });
+    }));
     onClose();
   };
 
@@ -146,6 +148,9 @@ const SettingsModal = ({ onClose, userData, onSave, onReset }) => {
 
           {/* Acciones secundarias (en la zona con scroll para que el pie quepa en pantallas bajas) */}
           <div className="mt-8 pt-6 border-t border-slate-200 space-y-4">
+            {/* Recordatorio diario */}
+            <ReminderSettings userData={userData} onSave={onSave} />
+
             {/* Copia de seguridad */}
             <div className="p-4 bg-white rounded-xl border border-slate-200">
               <p className="text-sm font-semibold text-slate-700 mb-1">Copia de seguridad</p>

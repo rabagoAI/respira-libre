@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { differenceInMinutes } from 'date-fns';
-import { Wind } from 'lucide-react';
+import { Wind, BellRing, X } from 'lucide-react';
 import { calculateTimeSinceQuit, calculateDailySavings } from '../utils/calculations';
 import { calculateRealSavings, getCurrentConsumption, getMovingAverage, getDailySeries } from '../utils/dailyCalculations';
 import { getStreaks } from '../utils/streaks';
@@ -9,6 +9,8 @@ import { buildAchievementContext, getAchievements, getNewAchievements } from '..
 import { getAchievedBenefits, getNextBenefit, getTimeToNextBenefit, healthBenefits } from '../utils/healthBenefits';
 import { getRecoverySystems, getReductionFactor, getNextBenefitProgress } from '../utils/recovery';
 import { scrollToSection } from '../utils/scroll';
+import { shouldShowReminder } from '../utils/reminder';
+import { useDailyReminder } from '../hooks/useDailyReminder';
 import BodyPanel from './BodyPanel';
 import OverviewHeader from './OverviewHeader';
 import SummaryCards from './SummaryCards';
@@ -53,6 +55,10 @@ const Dashboard = ({
 }) => {
   const [selectedSystem, setSelectedSystem] = useState('respiratory');
   const [showBreathing, setShowBreathing] = useState(false);
+  const [reminderDismissed, setReminderDismissed] = useState(false);
+
+  // Notificación del recordatorio diario a la hora elegida
+  useDailyReminder(userData, onUpdateData);
 
   // Volver a renderizar cada minuto para refrescar contadores y totales
   const [, setTick] = useState(0);
@@ -127,6 +133,39 @@ const Dashboard = ({
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 pb-12">
+      {/* Aviso del recordatorio diario */}
+      <AnimatePresence>
+        {shouldShowReminder(userData) && !reminderDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mb-4"
+            role="status"
+          >
+            <div className="flex items-center gap-3 rounded-3xl bg-primary-600 text-white pl-4 pr-2 py-2.5 shadow-lg shadow-primary-600/20">
+              <BellRing className="w-5 h-5 shrink-0" aria-hidden="true" />
+              <p className="!text-sm !text-white flex-1">Aún no has registrado tu consumo de hoy.</p>
+              <button
+                type="button"
+                onClick={() => scrollToSection('plan')}
+                className="shrink-0 rounded-full bg-white text-primary-700 text-sm font-semibold px-4 py-1.5 hover:bg-primary-50 transition-colors"
+              >
+                Registrar
+              </button>
+              <button
+                type="button"
+                onClick={() => setReminderDismissed(true)}
+                aria-label="Ocultar recordatorio"
+                className="shrink-0 w-8 h-8 rounded-full hover:bg-white/15 flex items-center justify-center"
+              >
+                <X className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Panel principal */}
       <motion.section
         id="panel"

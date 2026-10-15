@@ -13,6 +13,8 @@ Una aplicación web para ayudar a las personas a dejar de fumar, visualizando su
 - 🫁 **Hitos de salud** con su fuente oficial (OMS, Ministerio de Sanidad…)
 - 🎯 **Objetivos de ahorro** con 20+ metas predefinidas
 - 💾 **Copia de seguridad** exportable e importable en JSON
+- 🏆 **Rachas y logros**, y respiración guiada para los momentos de ganas de fumar
+- 📲 **App instalable** que funciona sin conexión, con recordatorio diario opcional
 - 📱 **Diseño responsive** que funciona en todos los dispositivos
 - 🔒 **Privacidad total** - tus datos solo se guardan en tu navegador
 

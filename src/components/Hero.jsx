@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { HeartPulse, PiggyBank, Target, Sparkles, ArrowDown, ShieldCheck } from 'lucide-react';
+import { HeartPulse, PiggyBank, Target, Sparkles, ArrowDown, ShieldCheck, Download } from 'lucide-react';
 import BodyFigure from './BodyFigure';
 import { getRecoverySystems } from '../utils/recovery';
 import { scrollToSection } from '../utils/scroll';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 const DAY = 24 * 60;
 
@@ -28,6 +29,7 @@ const FEATURES = [
  */
 const Hero = () => {
   const [stageIndex, setStageIndex] = useState(0);
+  const { canInstall, install } = useInstallPrompt();
   const stage = DEMO_STAGES[stageIndex];
   const systems = getRecoverySystems(stage.minutes);
   const lungs = systems.find(s => s.id === 'respiratory');
@@ -128,6 +130,16 @@ const Hero = () => {
                 Empezar ahora
                 <ArrowDown className="w-4 h-4" aria-hidden="true" />
               </button>
+              {canInstall && (
+                <button
+                  type="button"
+                  onClick={install}
+                  className="inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-5 py-3 transition-colors"
+                >
+                  <Download className="w-4 h-4" aria-hidden="true" />
+                  Instalar la app
+                </button>
+              )}
               <span className="inline-flex items-center gap-1.5 text-sm text-sky-100/70">
                 <ShieldCheck className="w-4 h-4" aria-hidden="true" />
                 Gratis y sin registro: tus datos se quedan en tu navegador

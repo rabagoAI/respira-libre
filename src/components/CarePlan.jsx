@@ -66,7 +66,7 @@ const CarePlan = ({ userData, onUpdateData, minutesSinceQuit }) => {
   const [activeTab, setActiveTab] = useState('today');
 
   return (
-    <section className="rounded-3xl bg-white/50 border border-white p-4 sm:p-5" aria-labelledby="care-plan-title">
+    <section id="plan" className="rounded-3xl bg-white/50 border border-white p-4 sm:p-5 scroll-mt-24" aria-labelledby="care-plan-title">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
         <h3 id="care-plan-title" className="!text-lg !font-normal text-slate-800">Tu plan personalizado</h3>
         <div role="tablist" aria-label="Secciones del plan" className="flex gap-1 rounded-full bg-slate-100/80 p-1 overflow-x-auto">

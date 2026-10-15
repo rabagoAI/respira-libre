@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, LineChart, Trophy, HeartPulse, Target, Settings, Flame } from 'lucide-react';
+import { LayoutDashboard, LineChart, Trophy, HeartPulse, Target, Settings, Flame, Download } from 'lucide-react';
 import { differenceInCalendarDays } from 'date-fns';
 import { scrollToSection } from '../utils/scroll';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 const NAV_ITEMS = [
   { id: 'panel', label: 'Panel', icon: LayoutDashboard },
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
  */
 const TopBar = ({ userData, onOpenSettings }) => {
   const [active, setActive] = useState('panel');
+  const { canInstall, install } = useInstallPrompt();
   const days = Math.max(differenceInCalendarDays(new Date(), new Date(userData.quitDate)), 0);
 
   const goTo = (id) => {
@@ -64,8 +66,20 @@ const TopBar = ({ userData, onOpenSettings }) => {
           </ul>
         </nav>
 
-        {/* Racha y ajustes */}
+        {/* Instalar, racha y ajustes */}
         <div className="flex items-center gap-2 shrink-0">
+          {canInstall && (
+            <button
+              type="button"
+              onClick={install}
+              aria-label="Instalar la app"
+              title="Instalar la app"
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 text-sm font-semibold transition-colors"
+            >
+              <Download className="w-4 h-4" aria-hidden="true" />
+              <span className="hidden lg:inline">Instalar</span>
+            </button>
+          )}
           <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-orange-50 border border-orange-100 px-3 py-1.5 text-sm font-semibold text-orange-600">
             <Flame className="w-4 h-4" aria-hidden="true" />
             {days} {days === 1 ? 'día' : 'días'}
