@@ -70,7 +70,7 @@ const ConsumptionChart = ({ userData }) => {
       className="card mb-12"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <h3 className="!text-lg !font-normal text-slate-800 flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary-600" />
           Tu consumo {data.length > 1 ? `de los últimos ${data.length} días` : 'de hoy'}
         </h3>

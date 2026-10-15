@@ -20,7 +20,7 @@ const HealthTimeline = ({ minutesSinceQuit }) => {
     >
       {/* Encabezado */}
       <div className="text-center mb-8">
-        <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+        <h3 className="!text-2xl md:!text-3xl !font-light text-slate-800 tracking-tight mb-3">
           Beneficios para tu salud
         </h3>
         <p className="text-slate-600">
@@ -72,7 +72,7 @@ const HealthTimeline = ({ minutesSinceQuit }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
-              className="bg-white rounded-xl p-5 shadow-md border border-slate-100 hover:shadow-lg transition-shadow"
+              className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 shadow-sm border border-white hover:shadow-lg transition-shadow"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="text-3xl">{benefit.icon}</div>

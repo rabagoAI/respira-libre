@@ -17,7 +17,7 @@ const getPreviousEntry = (dailyLog = {}, date) => {
   return previousDate ? { date: previousDate, value: dailyLog[previousDate] } : null;
 };
 
-const DailyTracker = ({ userData, onUpdateDaily }) => {
+const DailyTracker = ({ userData, onUpdateDaily, embedded = false }) => {
   const today = toLocalDateString();
   const minDate = toLocalDateString(new Date(userData.quitDate));
   const dailyLog = userData.dailyLog || {};
@@ -72,15 +72,18 @@ const DailyTracker = ({ userData, onUpdateDaily }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="card bg-gradient-to-br from-primary-50 to-blue-50 border-2 border-primary-200 mb-8"
+      className={embedded ? '' : 'card bg-gradient-to-br from-primary-50 to-blue-50 border-2 border-primary-200 mb-8'}
     >
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-primary-600 rounded-xl">
-          <Cigarette className="w-6 h-6 text-white" />
-        </div>
+        {/* Dentro del plan personalizado ya hay contexto, así que se omite el icono */}
+        {!embedded && (
+          <div className="p-3 bg-primary-600 rounded-xl">
+            <Cigarette className="w-6 h-6 text-white" />
+          </div>
+        )}
 
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-slate-900 mb-2">
+          <h3 className={`${embedded ? '!text-base' : '!text-xl'} font-bold text-slate-900 mb-2`}>
             {isToday ? '¿Cuántos cigarrillos has fumado hoy?' : `¿Cuántos cigarrillos fumaste el ${formattedDate}?`}
           </h3>
           <p className="text-sm text-slate-600 mb-4">
