@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, LineChart, HeartPulse, Target, Settings, Flame } from 'lucide-react';
+import { LayoutDashboard, LineChart, Trophy, HeartPulse, Target, Settings, Flame } from 'lucide-react';
 import { differenceInCalendarDays } from 'date-fns';
 import { scrollToSection } from '../utils/scroll';
 
 const NAV_ITEMS = [
   { id: 'panel', label: 'Panel', icon: LayoutDashboard },
   { id: 'evolucion', label: 'Evolución', icon: LineChart },
+  { id: 'logros', label: 'Logros', icon: Trophy },
   { id: 'beneficios', label: 'Beneficios', icon: HeartPulse },
   { id: 'objetivos', label: 'Objetivos', icon: Target }
 ];

@@ -2,53 +2,48 @@ import { addDays, differenceInCalendarDays, startOfDay } from 'date-fns';
 import { toLocalDateString } from './dates';
 
 /**
- * Calcula el ahorro real basado en el registro diario
- * Recorre cada día desde la fecha de inicio hasta hoy (incluido):
- * - Días con registro: usa el valor registrado
- * - Días sin registro: usa el último valor conocido
+ * Serie con el consumo de cada día desde la fecha de inicio hasta hoy (incluido):
+ * - Días con registro: el valor registrado
+ * - Días sin registro: el último valor conocido
  *   (cigarettesPerDayNow antes del primer registro)
+ * @param {Object} userData - Datos del usuario con dailyLog
+ * @returns {Array} [{ date, value, logged }] de más antiguo a hoy
+ */
+export const getDailySeries = (userData) => {
+  const { quitDate, cigarettesPerDayNow, dailyLog = {} } = userData;
+  const startDate = startOfDay(new Date(quitDate));
+  const totalDays = Math.max(differenceInCalendarDays(new Date(), startDate) + 1, 1);
+
+  const series = [];
+  let lastKnown = cigarettesPerDayNow;
+  for (let i = 0; i < totalDays; i++) {
+    const date = toLocalDateString(addDays(startDate, i));
+    const logged = dailyLog[date] !== undefined;
+    if (logged) lastKnown = dailyLog[date];
+    series.push({ date, value: lastKnown, logged });
+  }
+  return series;
+};
+
+/**
+ * Calcula el ahorro real basado en el registro diario (ver getDailySeries)
  * @param {Object} userData - Datos del usuario con dailyLog
  * @returns {Object} Dinero ahorrado y cigarrillos evitados
  */
 export const calculateRealSavings = (userData) => {
-  const { 
-    quitDate, 
-    packPrice, 
-    cigarettesPerPack, 
-    cigarettesPerDayBefore, 
-    cigarettesPerDayNow,
-    dailyLog = {}
-  } = userData;
+  const { packPrice, cigarettesPerPack, cigarettesPerDayBefore, cigarettesPerDayNow } = userData;
+  const series = getDailySeries(userData);
+  const loggedDays = series.filter(day => day.logged);
 
-  const pricePerCigarette = packPrice / cigarettesPerPack;
-  const startDate = startOfDay(new Date(quitDate));
-  const totalDays = Math.max(differenceInCalendarDays(new Date(), startDate) + 1, 1);
-
-  let totalCigarettesAvoided = 0;
-  let totalConsumed = 0;
-  let daysTracked = 0;
-  let lastKnown = cigarettesPerDayNow;
-
-  for (let i = 0; i < totalDays; i++) {
-    const dateStr = toLocalDateString(addDays(startDate, i));
-    const logged = dailyLog[dateStr];
-
-    if (logged !== undefined) {
-      lastKnown = logged;
-      totalConsumed += logged;
-      daysTracked++;
-    }
-
-    totalCigarettesAvoided += cigarettesPerDayBefore - lastKnown;
-  }
-
-  const averageDaily = daysTracked > 0 ? totalConsumed / daysTracked : cigarettesPerDayNow;
+  const totalCigarettesAvoided = series.reduce((sum, day) => sum + cigarettesPerDayBefore - day.value, 0);
+  const totalConsumed = loggedDays.reduce((sum, day) => sum + day.value, 0);
+  const averageDaily = loggedDays.length > 0 ? totalConsumed / loggedDays.length : cigarettesPerDayNow;
 
   return {
-    totalMoneySaved: totalCigarettesAvoided * pricePerCigarette,
+    totalMoneySaved: totalCigarettesAvoided * (packPrice / cigarettesPerPack),
     totalCigarettesAvoided,
     averageDaily: Math.round(averageDaily * 10) / 10,
-    daysTracked
+    daysTracked: loggedDays.length
   };
 };
 

@@ -28,7 +28,7 @@ const ExternalLinkItem = ({ href, children }) => (
  */
 const Footer = () => {
   return (
-    <footer className="mt-20 px-3 sm:px-6 lg:px-8 pb-6">
+    <footer className="mt-20 px-3 sm:px-6 lg:px-8 pb-24 sm:pb-24">
       <div className="max-w-7xl mx-auto rounded-[36px] bg-[#0b1d42] text-white overflow-hidden relative">
         <div className="absolute -top-24 right-0 w-96 h-96 rounded-full bg-primary-500/20 blur-3xl pointer-events-none" aria-hidden="true" />
 
