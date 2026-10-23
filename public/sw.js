@@ -2,12 +2,12 @@
  * Service worker de Respira Libre
  * - Páginas: primero la red (así siempre llega la última versión) y, sin conexión, la copia guardada
  * - /assets/* (con hash en el nombre, no cambian): primero la caché
- * - Resto de archivos y fuentes de Google: copia guardada al instante y se actualiza en segundo plano
+ * - Resto de archivos propios: copia guardada al instante y se actualiza en segundo plano
  * - Notificaciones: al pulsar una, se abre o enfoca la app
  */
-const CACHE = 'respira-libre-v1';
+// v2: la fuente Inter ya no viene de Google Fonts; al activar se borra la caché v1
+const CACHE = 'respira-libre-v2';
 const APP_SHELL = ['/', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png', '/body.webp'];
-const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -55,7 +55,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request));
   } else if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
     event.respondWith(cacheFirst(request));
-  } else if (url.origin === self.location.origin || FONT_HOSTS.includes(url.hostname)) {
+  } else if (url.origin === self.location.origin) {
     event.respondWith(staleWhileRevalidate(request));
   }
 });

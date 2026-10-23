@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Phone, ExternalLink, ShieldAlert } from 'lucide-react';
 import { HEALTH_SOURCES } from '../utils/healthBenefits';
+import PrivacyModal from './PrivacyModal';
 
 // Línea gratuita de la Asociación Española Contra el Cáncer (verificada en octubre de 2026)
 const HELP_LINE = {
@@ -27,6 +30,8 @@ const ExternalLinkItem = ({ href, children }) => (
  * Pie de página: ayuda profesional, fuentes sanitarias y aviso legal
  */
 const Footer = () => {
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
   return (
     <footer className="mt-20 px-3 sm:px-6 lg:px-8 pb-24 sm:pb-24">
       <div className="theme-fixed max-w-7xl mx-auto rounded-[36px] bg-[#0b1d42] text-white overflow-hidden relative">
@@ -85,9 +90,22 @@ const Footer = () => {
               consejo, diagnóstico ni tratamiento de un profesional sanitario. En caso de urgencia, llama al 112.
             </span>
           </p>
-          <p className="shrink-0 !text-xs !text-slate-400">&copy; {new Date().getFullYear()} Respira Libre</p>
+          <div className="shrink-0 flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setShowPrivacy(true)}
+              className="underline underline-offset-2 hover:text-white transition-colors"
+            >
+              Privacidad
+            </button>
+            <p className="!text-xs !text-slate-400">&copy; {new Date().getFullYear()} Respira Libre</p>
+          </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
+      </AnimatePresence>
     </footer>
   );
 };
